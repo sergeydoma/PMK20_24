@@ -155,7 +155,7 @@ typedef struct
 #endif
 
 #ifndef _Rins
-#define _Rins				5000		// Сопротивление изоляции
+#define _Rins						5000		// Сопротивление изоляции
 #endif
 
 
@@ -170,7 +170,7 @@ typedef struct
 //#endif
 
 #ifndef _v100
-#define _v100				20  //0x10000			// Напряжение смещения
+#define _v100				50  //0x10000			// Напряжение смещения
 #endif
 
 #ifndef _Voltconst
@@ -193,6 +193,23 @@ typedef struct
 #define _constRiz								69333 // значение при бесконечном сопротивлении
 #endif
 
+// электрические константы
+
+#ifndef _Uop
+#define _Uop 										4.8 		// опорное напряжение сопротивленя изоляции и т. в.
+#endif
+
+#ifndef _Rinp
+#define _Rinp							2447 // входное сопротивление канала измерения сопротивления изоляции (напряжения)...
+#endif
+
+#ifndef _Rmeas
+#define _Rmeas							47 // сопротивление измерительного шунта
+#endif 
+
+#ifndef _korr
+#define _korr							20.0 // коррекция значений сопротивления изоляции
+#endif
 
 //#ifndef UID_BASE
 //#define UID_BASE 0x1FFFF7E8
@@ -329,8 +346,8 @@ uint32_t Alarm_blinck (uint32_t color1, uint32_t color2, uint16_t period,uint8_t
 
 _Bool pause(uint16_t delta);
 
-void ADC_measure_plus(uint8_t nCh, uint16_t* arrWord, _Bool* arrBool, uint16_t* arrWordTemp, _Bool* arrBoolTemp);
-void ADC_measure_minus(uint8_t nCh, uint16_t* arrWord, _Bool* arrBool);
+void ADC_measure_plus(uint8_t nCh, uint16_t* aWord, _Bool* aBool);
+void ADC_measure_minus(uint8_t nCh, uint16_t* aWord, _Bool* aBool);
 
 /* USER CODE END Private defines */
 

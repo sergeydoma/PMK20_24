@@ -7,8 +7,8 @@ extern SPI_HandleTypeDef hspi1;
 extern uint32_t  led_rgb[10];
 extern float RZ[3];
 extern GPIO switch_gpio[10]; 
-extern _Bool arrBool[0x400];  
-extern	uint16_t arrWord[0x400];
+//extern _Bool arrBool[0x400];  
+//extern	uint16_t arrWord[0x400];
 uint32_t constBipol;
 float Bipol[10];
 float sR;
@@ -506,112 +506,7 @@ uint8_t out;
 //}	
 // **************************************************************
 
-void ADC_measure_Pre(uint8_t nCh, uint16_t* arrWord, uint16_t* arrSetpoint) // Установочно - калибровочный режим
-	{
-	extern uint32_t adc_delay;
-	uint32_t n = 16;
-	uint32_t s;
-	float R = 20000.0;
-	int ok = 1;
-	float delta = 0.2;
-		const uint32_t Rins = _Rins;
-		const uint32_t Rloop = _Rloop;
-	
-	//led_rgb[adc_current_chan] = 0x1f;
-		
-// Сопротивление Шлейфа
-	ADC_set_config(0x1012); // Внешний REFin1+ REFin2+  Ain 3 (+) буферный усилитель униполярный режим
-	HAL_Delay(adc_delay);
-	ADC_set_mode(0x8009);  // calibrate zero
-	HAL_Delay(adc_delay);
-	ADC_set_mode(0x800a);  // calibrate full-scale
-	HAL_Delay(adc_delay);
-	ADC_set_mode(0x0009);  // return to continuous reads
-	HAL_Delay(adc_delay);
 
-	//led_rgb[adc_current_chan] = 0x4f;
-
-	ADC_read(1, adc_delay); // buffer flush
-	ADC_read(1, adc_delay); // buffer flush
-	s = ADC_read(n, adc_delay);
-
-	//led_rgb[adc_current_chan] = 0x1f;
-
-	R *= s;
-	R /= (0x0ffeb00 - s);
-
-	if (R > 31.0)
-		R -= 31.0;  // TBU effective serial resistance
-
- RZ[2] = R;	
-
-	// Сопротивление Шлейфа
-if (R>65535){R=65535;}
-arrWord[70 + nCh] = R; // измеренное значение
-if (R< Rloop) {R=Rloop;}
-arrSetpoint[30 + nCh] = R; // Уставка обрезанная снизу
-// ***************************************************************************************
-//  Сопротивление изоляции 1
-	ADC_set_config(0x1050); //0x1050) смещение внешнее REFin2+ REFin2- буфер канал 1 
-	HAL_Delay(adc_delay);
-
-	ADC_set_mode(0x8009);  // calibrate zero
-	HAL_Delay(adc_delay);
-	ADC_set_mode(0x800a);  // calibrate full-scale
-	HAL_Delay(adc_delay);
-	ADC_set_mode(0x0009);  // return to continuous reads
-	HAL_Delay(adc_delay);
-
-	//led_rgb[adc_current_chan] = 0x4f;
-
-	ADC_read(1, adc_delay); // buffer flush
-	ADC_read(1, adc_delay); // buffer flush
-	s = ADC_read(n, adc_delay);
-
-	//led_rgb[adc_current_chan] = 0x1f;
-
-	R = 16.*1024.*1024 / s;
-	R *= 2396.;
-	R -= 1047.0;
-	RZ[0] = R;	// Сопротивление изоляции 1
-	if (R>65535){R=65535;}
-	arrWord[50 + nCh] = R; // измеренное значение
-	if (R<Rins){R=Rins;}
-	arrSetpoint[10 + nCh] = R; // Уставка обрезанная снизу
-	
-// Сопротивление изолияции 2	
-	//led_rgb[adc_current_chan] = 0x1f;
-	ADC_set_config(0x1051); //0x1050) смещение внешнее REFin2+ REFin2- буфер канал 1 
-	HAL_Delay(adc_delay);
-	ADC_set_mode(0x8009);  // calibrate zero
-	HAL_Delay(adc_delay);
-	ADC_set_mode(0x800a);  // calibrate full-scale
-	HAL_Delay(adc_delay);
-	ADC_set_mode(0x0009);  // return to continuous reads
-	HAL_Delay(adc_delay);
-
-	//led_rgb[adc_current_chan] = 0x4f;
-
-	ADC_read(1, adc_delay); // buffer flush
-	ADC_read(1, adc_delay); // buffer flush
-	s = ADC_read(n, adc_delay);
-
-	//led_rgb[adc_current_chan] = 0x1f;
-
-	R = 16.*1024.*1024 / s;
-	R *= 2396.;
-	R -= 1047.0;
-	RZ[1] = R;
-	
-	if (R>65535){R=65535;}
-	arrWord[60 + nCh] = R; // измеренное значение сопротивления изоляции 2
-	if (R<Rins){R=Rins;}
-//	arrSetpoint[20 + nCh] = R; // Уставка обрезанная снизу
-//	HAL_Delay(11);
-	R=R+569;
-//	R=R-569;
-//	R=R+569;
-}
 	
 _Bool pause(uint16_t delta)
 {
@@ -634,653 +529,612 @@ out = 1;
 return out;
 
 }
-void EON_ready()
-{
-	extern uint32_t adc_delay;
-	uint32_t v100; // Временно напряжение 100 вольт
-	_Bool out; //Выход
-	uint32_t n = 16;//16;
-	
-	
-	
-		// Проверка наличия 100 В
-	v100 = 0;
-	ADC_set_config(0x1093); //0x1051) смещение Внутреннее - буфер канал 4
-	HAL_Delay(adc_delay);
-		
-	ADC_set_mode(0x8009);  // calibrate zero
-	HAL_Delay(adc_delay);
-	ADC_set_mode(0x800a);  // calibrate full-scale
-		
-	HAL_Delay(adc_delay);
-	ADC_set_mode(0x0009);  // return to continuous reads
-	HAL_Delay(adc_delay);
 
-	//led_rgb[adc_current_chan] = 0x4f;
+//void ADC_measureVolt(uint8_t nCh, uint16_t* aWord, _Bool* aBool) 
+//	{
+//	extern uint32_t adc_delay;
+//	uint32_t n = 16;//16;
+//	uint32_t s;
+//	uint16_t limit, delta;
+//	uint8_t alarm1, alarm2;
 
-	ADC_read(1, adc_delay); // buffer flush
-	ADC_read(1, adc_delay); // buffer flush
-	v100 = ADC_read(n, adc_delay); // Измерение 100 В.
-	HAL_Delay(adc_delay);
-
-	if (v100 < _v100)
-	{
-		arrWord[380] 	= 1;
-		
-	}
-	else
-	{
-		arrWord[380] =  10;
-	}
-}
-void ADC_measureVolt(uint8_t nCh, uint16_t* arrWord, _Bool* arrBool) 
-	{
-	extern uint32_t adc_delay;
-	uint32_t n = 16;//16;
-	uint32_t s;
-//	uint16_t delta	
-//	uint32_t v100; // Временно напряжение 100 вольт
-//	float R = 20000.0;
-//	int ok = 1;
-//	float delta = 0.2;
-		uint16_t limit, delta;
-		uint8_t alarm1, alarm2;
-
- 	
-		// Напряжение утечки 1
-		
-	ADC_set_config(0x0000); //0x1050) смещение внешнее REFin1+ REFin1- буфера нет канал 1
-	HAL_Delay(adc_delay);		
-	ADC_set_mode(0x8009);  // calibrate zero
-	HAL_Delay(adc_delay);			
-	ADC_set_mode(0x800a);  // calibrate full-scale
-	HAL_Delay(adc_delay);		
-	ADC_set_mode(0x0009);  // return to continuous reads
-	HAL_Delay(adc_delay);
-	ADC_read(1, adc_delay); // buffer flush	
-	ADC_read(1, adc_delay); // buffer flush
-	s = ADC_read(n, adc_delay);
-	//++++++++++++++++++++++++++
-	
-	if (s > _Voltconst ){s = s - _Voltconst;}
-	else {
-	s = _Voltconst - s;
-	
-	}
-	
-	s=s>>8;
-	
-	s=(s*100)/298;
-	if (s<=280){s=0;}
-	callFlo[nCh]=s;
-	arrWord[190 +nCh] = s/10;
-	
-		limit  = arrWord[200 + nCh];
-		delta = limit * 10;
-		limit = limit *100;
-		if (s > limit)
-		{alarm1 =1;}
-		else if (s <(limit - delta))
-		{alarm1 = 0;}
-	
-  
-
-	
-		// Напряжение утечки 2	
-
-	ADC_set_config(0x0001); //0x1051) смещение внешнее REFin1+ REFin1- буфера нет биполярный сигнал 
-	HAL_Delay(adc_delay);
-		
-	ADC_set_mode(0x8009);  // calibrate zero
-	HAL_Delay(adc_delay);
-	ADC_set_mode(0x800a);  // calibrate full-scale
-	HAL_Delay(adc_delay);
-	ADC_set_mode(0x0009);  // return to continuous reads
-	HAL_Delay(adc_delay);
-	ADC_read(1, adc_delay); // buffer flush
-	ADC_read(1, adc_delay); // buffer flush
-	
-	s=0;
-	s = ADC_read(n, adc_delay);
-	
-	if (s > _Voltconst ){s = s - _Voltconst;}
-	else {s = _Voltconst - s;}
-//	arrWord[nCh+200] = s;
-	s=s>>8;	
-	s=(s*100)/298;
-	if (s<=280){s=0;}
-	arrWord[230 +nCh] = s/10;
-	
-		limit  = arrWord[200 + nCh];
-		delta = limit * 10;
-		limit = limit *100;
-		if (s > limit)
-		{alarm2 =1;}
-		else if (s <(limit - delta))
-		{alarm2 = 0;}	
-
-		arrBool[nCh +100] = alarm1 | alarm2;
-		arrBool[nCh+110] = !arrBool[nCh+100];
-
-////	arrWord[nCh+200] = s; //>>8;
-//	arrWord[nCh +201] = s>>8;
-	
-
-
-
-////////	if (arrBool[nCh + 20] & arrBool[nCh +30] & arrBool[nCh +40]&arrBool[nCh+50])
-////////	{ arrBool[nCh+60]=1; } // allarm
-
-
-}
-	void ADC_measure_plus(uint8_t nCh, uint16_t* arrWord, _Bool* arrBool, uint16_t* arrWordTemp, _Bool* arrBoolTemp ) 
-	{
-	extern uint32_t adc_delay;
-	uint32_t n = 16;//16;
-	uint32_t s;
-	float v100; // Временно напряжение 100 вольт
-	float R = 20000.0;
-	int ok = 1;
-	float delta = 0.2;
-	float kbipol=0;
-		
-		// Сопротивление Шлейфа
-
-	ADC_set_config(0x1012); // Внешний REFin1+ REFin2+  Ain 3 (+) буферный усилитель униполярный режим
-	HAL_Delay(adc_delay);
-
-	ADC_set_mode(0x8009);  // calibrate zero
-	HAL_Delay(adc_delay);
-	ADC_set_mode(0x800a);  // calibrate full-scale
-	HAL_Delay(adc_delay);
-	ADC_set_mode(0x0009);  // return to continuous reads
-	HAL_Delay(adc_delay);
-
-
-	ADC_read(1, adc_delay); // buffer flush
-	ADC_read(1, adc_delay); // buffer flush
-	s = ADC_read(n, adc_delay);
-
-	R *= s;
-	callibrateU[nCh] = s;
-	if (s <=0x00FFFAD7)
-	{R /= (0x00FFFAD7 - s);}
-	else 
-	{R /= (s - 0x00FFFAD7);}	
-	if (R > 31.0)
-	{R -= 31.0;}  // TBU effective serial resistance
-//	printf("Loop R: %.2f Ohm\n------------------\n", R);
- RZ[2] = R;	
-
-	// Сопротивление Шлейфа
-if (R>65535){R=65535;}
-
-//if((arrWord[70+nCh]<_LoopUpMin)& (R>_LoopUpMax)) // Скачек пока не надо
-//{ // таким образом фиксируем обрыв кабеля
-//			{
-//				arrBool[nCh+50]=0;
-//			}
-//}	
-//////////if (R<_LoopUpMax)
-//////////			{
-//////////				arrBool[nCh+50]=1;
-//////////			}
-
-arrWordTemp[70 + nCh] = R; // измеренное значение
-//диапазон 	
-			delta = ((uint8_t)arrWord[nCh])*0.01; //230717
-		// Сопротивление шлейфа
-
-			if (R < (arrWord[nCh +30]-arrWord[nCh +30]*delta)) // | (R > (arrWord[nCh +30]+arrWord[nCh +30]*delta)))
-			{ 
-				arrBoolTemp[nCh +40] = 0;	// выход за пределы для канала вниз
-			}
-			else
-			{
-				arrBoolTemp[nCh +40] = 1;
-			}
-
-//////////	//led_rgb[adc_current_chan] = 0x1f;
-		//*******************************************
-	// Проверка наличия 100 В
-	v100 = 0;
-			
-	ADC_set_config(0x0003); //0x1051) смещение Внутреннее - буфер канал 4
-	HAL_Delay(adc_delay);
-		
-	ADC_set_mode(0x8009);  // calibrate zero
-	HAL_Delay(adc_delay);
-	ADC_set_mode(0x800a);  // calibrate full-scale
-		
-	HAL_Delay(adc_delay);
-	ADC_set_mode(0x0009);  // return to continuous reads
-	HAL_Delay(adc_delay);
-
-	//led_rgb[adc_current_chan] = 0x4f;
-
-	ADC_read(1, adc_delay); // buffer flush
-	ADC_read(1, adc_delay); // buffer flush
-	v100 = ADC_read(n, adc_delay); // Измерение 100 В.
-	HAL_Delay(adc_delay);
-	if (s <=  _constBipol)
-	{
-		s = _constBipol -s ;
-	}
-	else
-	{
-	 s = 0;
-	}
-	v100 = s/32897;
-	
-	
-	if (v100 < _v100)
-	{
-		arrWord[140] 	= arrWord[140] | 0x4;
-		arrWord[222 ] = arrWord[222] | 1 << nCh;
-	}
-	else
-	{
-		arrWord[140] &=  0xFB;
-		arrWord[222] &= ~ (1<<nCh);
-	}
-	
-// сопротивление изоляции 1
-	
-	ADC_set_config(0x0000);//(0x0080); 	//	(0x1050); //0x1050) смещение внешнее REFin2+ REFin2- буфер канал 1 
-	HAL_Delay(adc_delay);		
-	ADC_set_mode(0x8009);  // calibrate zero
-	HAL_Delay(adc_delay);			
-	ADC_set_mode(0x800a);  // calibrate full-scale
-	HAL_Delay(adc_delay);
-			
-
-			
-	ADC_set_mode(0x0009);  // return to continuous reads
-	HAL_Delay(adc_delay);
-			
-//	HAL_Delay(adc_delay);
-	ADC_read(1, adc_delay); // buffer flush	
-	ADC_read(1, adc_delay); // buffer flush
-	s = ADC_read(n, adc_delay);
-	if (s > _constBipol	){s = 0;} //s - _Voltconst;}
-	else {s = _constBipol - s;}	
-
-	R=s;
-
-	
-//	R = 2396*16.*1024.*1024 / s;
-//	R= R/1.2025;
-	
-	R=458*16.*1024.*1024 / s;  //470*16.*1024.*1024 / s;
-
-
-	
-//	R *= 2396.;
-	R -= 1047.0;
-	RZ[1] = R;
-//	R -= 0937.93286;
-
-
-//	printf("Ins R: %u KOhm\n------------------\n", (unsigned int)R);
-//	RZ[0] = R;	// Сопротивление изоляции 1
-	R = R/16;
-		if (R>0xFFFF){R=0xFFFF;}
-		float RzM= 0;
-		float RzP =0;
-		float Ux = 0;
-		float Rp = 0;
-		float Rm = 0;
-		
-		RzP = R;
-		
-		RzM = arrWord[170+nCh];
-		
-		if (RzM>=RzP)
-		{
-			kbipol = RzM/RzP;
-		}
-		else
-		{
-			kbipol = RzP/RzM;;
-		}
-		
-		Ux = 100*(kbipol-1)/(kbipol+1);
-		
-		Rm = (100 -Ux)*RzM/100;
-				
-		arrWord[150 + nCh] = R; // измеренное значение
-		
-		arrWordTemp[50+nCh]=Rm;
+// 	
+//		// Напряжение утечки 1
 //		
-//		arrWord[50+nCh] = (arrWord[150+nCh]+arrWord[170+nCh])/2;
-//		
-//		R=arrWord[50+nCh];
-		
-//		kbipol = arrWord[170+nCh]
-		
-		delta = (uint8_t)(arrWord[nCh]>>8)*0.01; //230717
-	
-		if (Rm < (arrWord[nCh +10]-arrWord[nCh +10]*delta))// | (R > (arrWord[nCh +10]+arrWord[nCh +10]*delta)))
-		{ 
-			arrBoolTemp[nCh +20] = 0;	// выход за пределы для канала сопротивления изоляции 1
-		}
-		else
-		{
-			arrBoolTemp[nCh +20] = 1;
-		}
-	
-// Сопротивление изолияции 2	
-		//led_rgb[adc_current_chan] = 0x1f;
-
-	ADC_set_config(0x0001); //(0x0081); //0x1051) Смещение внутреннее ....смещение внешнее REFin2+ REFin2- буфер канал 1 
-	HAL_Delay(adc_delay);
-
-//	test_Status = ADC_Status();
-		
-	ADC_set_mode(0x8009);  // calibrate zero
-	HAL_Delay(adc_delay);
-	ADC_set_mode(0x800a);  // calibrate full-scale
-	HAL_Delay(adc_delay);
-	ADC_set_mode(0x0009);  // return to continuous reads
-	HAL_Delay(adc_delay);
-
-	//led_rgb[adc_current_chan] = 0x4f;
-
-	ADC_read(1, adc_delay); // buffer flush
-	ADC_read(1, adc_delay); // buffer flush
-	s = ADC_read(n, adc_delay);
-	
-	if (s > _constBipol	){s = 0;} //s - _Voltconst;}
-	else {s = _constBipol - s;}	
-
-	R=s;
-
-
-	
-//	R = 2396*16.*1024.*1024 / s;
-//	R= R/1.2025;
-	
-	R=458 *16.*1024.*1024 / s;			//470*16.*1024.*1024 / s;
-
-
-	
-//	R *= 2396.;
-	R -= 1047.0;
-	RZ[1] = R;
-//	R -= 0937.93286;
-
-
-//	printf("Ins R: %u KOhm\n------------------\n", (unsigned int)R);
-//	RZ[0] = R;	// Сопротивление изоляции 1
-	R = R/16;
-	if (R>0xFFFF){R=0xFFFF;}		
-		RzP = R;
-		arrWord[160 + nCh] = R; 
-		RzM = arrWord[180+nCh];
-		if (RzM>=RzP)
-		{
-			kbipol = RzM/RzP;
-		}
-		else
-		{
-			kbipol = RzP/RzM;;
-		}
-		
-		Ux = 100*(kbipol-1)/(kbipol+1);
-		Rm = (100 -Ux)*RzM/100;
-		
-		arrWordTemp[60+nCh]=Rm;
-		
-		// измеренное значение
-	
-//	arrWord[60+nCh] = (arrWord[160+nCh]+arrWord[180+nCh])/2;
-//	R=arrWord[60+nCh];
-
-//	arrWord[60 + nCh] = R; // измеренное значение сопротивления изоляции 2	
-	
-	delta = (uint8_t)(arrWord[nCh]>>8)*0.01;// 230717
-	if (Rm < (arrWord[nCh +20]-arrWord[nCh +20]*delta))//| (R > (arrWord[nCh +20]+arrWord[nCh +20]*delta)))
-	{ 
-		arrBoolTemp[nCh +30] = 0;	// выход за пределы для канала сопротивления изоляции 1 ps фиксируется только вниз
-	}
-	else
-	{
-		arrBoolTemp[nCh +30] = 1;	
-	}
-
-//	ok &= (R >= 40000.);
-//////////	if (arrBool[nCh + 20] & arrBool[nCh +30] & arrBool[nCh +40]&arrBool[nCh+50])
-//////////	{ arrBool[nCh+60]=1; } // allarm
-
-}
-	void ADC_measure_minus(uint8_t nCh, uint16_t* arrWord, _Bool* arrBool) 
-	{
-	extern uint32_t adc_delay;
-	uint32_t n = 16;//16;
-	uint32_t s;
-	float v100; // Временно напряжение 100 вольт
-	float R = 20000.0;
-	int ok = 1;
-	float delta = 0.2;
-		
-		// Сопротивление Шлейфа
-
-//	ADC_set_config(0x1012); // Внешний REFin1+ REFin2+  Ain 3 (+) буферный усилитель униполярный режим
+//	ADC_set_config(0x0000); //0x1050) смещение внешнее REFin1+ REFin1- буфера нет канал 1
+//	HAL_Delay(adc_delay);		
+//	ADC_set_mode(0x8009);  // calibrate zero
+//	HAL_Delay(adc_delay);			
+//	ADC_set_mode(0x800a);  // calibrate full-scale
+//	HAL_Delay(adc_delay);		
+//	ADC_set_mode(0x0009);  // return to continuous reads
 //	HAL_Delay(adc_delay);
+//	ADC_read(1, adc_delay); // buffer flush	
+//	ADC_read(1, adc_delay); // buffer flush
+//	s = ADC_read(n, adc_delay);
+//	//++++++++++++++++++++++++++
+//	
+//	if (s > _Voltconst ){s = s - _Voltconst;}
+//	else {
+//	s = _Voltconst - s;
+//	
+//	}
+//	
+//	s=s>>8;
+//	
+//	s=(s*100)/298;
+//	if (s<=280){s=0;}
+//	
+//	/*callFlo[nCh]=s;*/
+//	
+//	aWord[190 +nCh] = s/10;
+//	
+//		limit  = aWord[200 + nCh];
+//		delta = limit * 10;
+//		limit = limit *100;
+//		if (s > limit)
+//		{alarm1 =1;}
+//		else if (s <(limit - delta))
+//		{alarm1 = 0;}
+//	
+//  
 
+//	
+//		// Напряжение утечки 2	
+
+//	ADC_set_config(0x0001); //0x1051) смещение внешнее REFin1+ REFin1- буфера нет биполярный сигнал 
+//	HAL_Delay(adc_delay);
+//		
 //	ADC_set_mode(0x8009);  // calibrate zero
 //	HAL_Delay(adc_delay);
 //	ADC_set_mode(0x800a);  // calibrate full-scale
 //	HAL_Delay(adc_delay);
 //	ADC_set_mode(0x0009);  // return to continuous reads
 //	HAL_Delay(adc_delay);
-
-
 //	ADC_read(1, adc_delay); // buffer flush
 //	ADC_read(1, adc_delay); // buffer flush
+//	
+//	s=0;
 //	s = ADC_read(n, adc_delay);
-
-//	R *= s;
-//	if (s <=0x00FFFAD7)
-//	{R /= (0x00FFFAD7 - s);}
-//	else 
-//	{R /= (s - 0x00FFFAD7);}	
-//	if (R > 31.0)
-//	{R -= 31.0;}  // TBU effective serial resistance
-////	printf("Loop R: %.2f Ohm\n------------------\n", R);
-// RZ[2] = R;	
-
-//	// Сопротивление Шлейфа
-//if (R>65535){R=65535;}
-
-////if((arrWord[70+nCh]<_LoopUpMin)& (R>_LoopUpMax)) // Скачек пока не надо
-////{ // таким образом фиксируем обрыв кабеля
-////			{
-////				arrBool[nCh+50]=0;
-////			}
-////}	
-////if (R<_LoopUpMax)
-////			{
-////				arrBool[nCh+50]=1;
-////			}
-
-//arrWord[70 + nCh] = R; // измеренное значение
-////диапазон 	
-//			delta = ((uint8_t)arrWord[nCh])*0.01; //230717
-//		// Сопротивление шлейфа
-
-//			if (R < (arrWord[nCh +30]-arrWord[nCh +30]*delta)) // | (R > (arrWord[nCh +30]+arrWord[nCh +30]*delta)))
-//			{ 
-//				arrBool[nCh +40] = 0;	// выход за пределы для канала вниз
-//			}
-//			else
-//			{
-//				arrBool[nCh +40] = 1;
-//			}
-
-//////////	//led_rgb[adc_current_chan] = 0x1f;
-		//*******************************************
-	// Проверка наличия 100 В
-	v100 = 0;
-			
-	ADC_set_config(0x0003);  // биполярный смещение от IN1 без буфера ....(0x1093); //0x1051) смещение Внутреннее - буфер канал 4
-	HAL_Delay(adc_delay);
-		
-	ADC_set_mode(0x8009);  // calibrate zero
-	HAL_Delay(adc_delay);
-	ADC_set_mode(0x800a);  // calibrate full-scale
-		
-	HAL_Delay(adc_delay);
-	ADC_set_mode(0x0009);  // return to continuous reads
-	HAL_Delay(adc_delay);
-
-	//led_rgb[adc_current_chan] = 0x4f;
-
-	ADC_read(1, adc_delay); // buffer flush
-	ADC_read(1, adc_delay); // buffer flush
-	
-	s = ADC_read(n, adc_delay); // Измерение 100 В.
-	
-	if (s >=  _constBipol)
-	{
-		s = s -_constBipol;
-	}
-	else
-	{
-	 s = 0;
-	}
-	v100 = s/32897;
-	
-
-	HAL_Delay(adc_delay);
-	
-	if (v100 < _v100)
-	{
-		arrWord[140] 	= arrWord[140] | 0x2;
-		arrWord[221 ] = arrWord[221] | 1 << nCh;
-	}
-	else
-	{
-		arrWord[140] &=  0xFD;
-		arrWord[221] &= ~ (1<<nCh);
-	}
-	
-// сопротивление изоляции 1
-	
-	ADC_set_config(0x0000); //(0x0080); 	//	(0x1050); //0x1050) смещение внешнее REFin2+ REFin2- буфер канал 1 
-	HAL_Delay(adc_delay);		
-	ADC_set_mode(0x8009);  // calibrate zero
-	HAL_Delay(adc_delay);			
-	ADC_set_mode(0x800a);  // calibrate full-scale
-	HAL_Delay(adc_delay);
-			
-
-			
-	ADC_set_mode(0x0009);  // return to continuous reads
-	HAL_Delay(adc_delay);
-			
-//	HAL_Delay(adc_delay);
-	ADC_read(1, adc_delay); // buffer flush	
-	ADC_read(1, adc_delay); // buffer flush
-	s = ADC_read(n, adc_delay);
-	if (s < _constBipol_minus	){s = 0;} //s - _Voltconst;}
-	else {s = s -_constBipol_minus;}	
-	
-	
-	R=s;
-
-	
-	
-//	R = 2396*16.*1024.*1024 / s;
-//	R= R/1.2625;
-
-	R= 481*16.*1024.*1024 / s; //470*16.*1024.*1024 / s;
-	
-	
-//	R *= 2396.;
-	R -= 1047.0;
-	RZ[1] = R;
-//	R -= 0937.93286;
-
-
-//	printf("Ins R: %u KOhm\n------------------\n", (unsigned int)R);
-//	RZ[0] = R;	// Сопротивление изоляции 1
-	R = R/16;
-		if (R>0xFFFF){R=0xFFFF;}
-		arrWord[170 + nCh] = R; // измеренное значение
-		
-//		delta = (uint8_t)(arrWord[nCh]>>8)*0.01; //230717
 //	
-//		if (R < (arrWord[nCh +10]-arrWord[nCh +10]*delta))// | (R > (arrWord[nCh +10]+arrWord[nCh +10]*delta)))
-//		{ 
-//			arrBool[nCh +20] = 0;	// выход за пределы для канала сопротивления изоляции 1
-//		}
-//		else
-//		{
-//			arrBool[nCh +20] = 1;
-//		}
-	
-// Сопротивление изолияции 2	
-		//led_rgb[adc_current_chan] = 0x1f;
-
-	ADC_set_config (0x0001); //(0x0081); //0x1051) Смещение внутреннее ....смещение внешнее REFin2+ REFin2- буфер канал 1 
-	HAL_Delay(adc_delay);
-
-//	test_Status = ADC_Status();
-		
-	ADC_set_mode(0x8009);  // calibrate zero
-	HAL_Delay(adc_delay);
-	ADC_set_mode(0x800a);  // calibrate full-scale
-	HAL_Delay(adc_delay);
-	ADC_set_mode(0x0009);  // return to continuous reads
-	HAL_Delay(adc_delay);
-
-	//led_rgb[adc_current_chan] = 0x4f;
-
-	ADC_read(1, adc_delay); // buffer flush
-	ADC_read(1, adc_delay); // buffer flush
-	s = ADC_read(n, adc_delay);
-
-	if (s < _constBipol_minus	){s = 0;} //s - _Voltconst;}
-	else {s = s -_constBipol_minus;}	
-
-	
-	R=s;
-
-	
-	
-//	R = 2396*16.*1024.*1024 / s;
-//	R= R/1.2625;
-	
-	R= 481*16.*1024.*1024 / s;	//470*16.*1024.*1024 / s;
-
-	
-//	callFlo[nCh] = R;
+//	if (s > _Voltconst ){s = s - _Voltconst;}
+//	else {s = _Voltconst - s;}
+////	arrWord[nCh+200] = s;
+//	s=s>>8;	
+//	s=(s*100)/298;
+//	if (s<=280){s=0;}
+//	aWord[230 +nCh] = s/10;
 //	
-//	R *= 2396.;
-	R -= 1047.0;
-	RZ[1] = R;
-//	R -= 0937.93286;
+//		limit  = aWord[200 + nCh];
+//		delta = limit * 10;
+//		limit = limit *100;
+//		if (s > limit)
+//		{alarm2 =1;}
+//		else if (s <(limit - delta))
+//		{alarm2 = 0;}	
+
+//		aBool[nCh +100] = alarm1 | alarm2;
+//		aBool[nCh+110] = !aBool[nCh+100];
+
+//////	arrWord[nCh+200] = s; //>>8;
+////	arrWord[nCh +201] = s>>8;
+//	
 
 
-//	printf("Ins R: %u KOhm\n------------------\n", (unsigned int)R);
-//	RZ[0] = R;	// Сопротивление изоляции 2
-	R = R/16;
-	if (R>0xFFFF){R=0xFFFF;}
 
-	arrWord[180 + nCh] = R; // измеренное значение сопротивления изоляции 2	
-//	delta = (uint8_t)(arrWord[nCh]>>8)*0.01;// 230717
-//	if (R < (arrWord[nCh +20]-arrWord[nCh +20]*delta))//| (R > (arrWord[nCh +20]+arrWord[nCh +20]*delta)))
-//	{ 
-//		arrBool[nCh +30] = 0;	// выход за пределы для канала сопротивления изоляции 1 ps фиксируется только вниз
-//	}
-//	else
-//	{
-//		arrBool[nCh +30] = 1;	
-//	}
+//////////	if (arrBool[nCh + 20] & arrBool[nCh +30] & arrBool[nCh +40]&arrBool[nCh+50])
+//////////	{ arrBool[nCh+60]=1; } // allarm
 
-//	ok &= (R >= 40000.);
-////////	if (arrBool[nCh + 20] & arrBool[nCh +30] & arrBool[nCh +40]&arrBool[nCh+50])
-////////	{ arrBool[nCh+60]=1; } // allarm
 
-}
+//}
+////////	void ADC_measure_plus(uint8_t nCh, uint16_t* aWord, _Bool* aBool) //, uint16_t* arrWordTemp, _Bool* arrBoolTemp ) 
+////////	{
+////////	extern uint32_t adc_delay;
+////////	uint32_t n = 16;//16;
+////////	uint32_t s;
+////////	float v100; // Временно напряжение 100 вольт
+////////	float R = 20000.0;
+////////	int ok = 1;
+////////	float delta = 0.2;
+////////	float kbipol=0;
+////////		
+////////		// Сопротивление Шлейфа
+
+////////	ADC_set_config(0x1012); // Внешний REFin1+ REFin2+  Ain 3 (+) буферный усилитель униполярный режим
+////////	HAL_Delay(adc_delay);
+
+////////	ADC_set_mode(0x8009);  // calibrate zero
+////////	HAL_Delay(adc_delay);
+////////	ADC_set_mode(0x800a);  // calibrate full-scale
+////////	HAL_Delay(adc_delay);
+////////	ADC_set_mode(0x0009);  // return to continuous reads
+////////	HAL_Delay(adc_delay);
+
+
+////////	ADC_read(1, adc_delay); // buffer flush
+////////	ADC_read(1, adc_delay); // buffer flush
+////////	s = ADC_read(n, adc_delay);
+
+////////	R *= s;
+////////	callibrateU[nCh] = s;
+////////	if (s <=0x00FFFAD7)
+////////	{R /= (0x00FFFAD7 - s);}
+////////	else 
+////////	{R /= (s - 0x00FFFAD7);}	
+////////	if (R > 31.0)
+////////	{R -= 31.0;}  // TBU effective serial resistance
+//////////	printf("Loop R: %.2f Ohm\n------------------\n", R);
+//////// RZ[2] = R;	
+
+////////	// Сопротивление Шлейфа
+////////if (R>65535){R=65535;}
+
+//////////if((arrWord[70+nCh]<_LoopUpMin)& (R>_LoopUpMax)) // Скачек пока не надо
+//////////{ // таким образом фиксируем обрыв кабеля
+//////////			{
+//////////				arrBool[nCh+50]=0;
+//////////			}
+//////////}	
+//////////////////if (R<_LoopUpMax)
+//////////////////			{
+//////////////////				arrBool[nCh+50]=1;
+//////////////////			}
+
+////////aWord[70 + nCh] = R; // измеренное значение
+//////////диапазон 	
+////////			delta = ((uint8_t)aWord[nCh])*0.01; //230717
+////////		// Сопротивление шлейфа
+
+////////			if (R < (aWord[nCh +30]-aWord[nCh +30]*delta)) // | (R > (arrWord[nCh +30]+arrWord[nCh +30]*delta)))
+////////			{ 
+////////				aBool[nCh +40] = 0;	// выход за пределы для канала вниз
+////////			}
+////////			else
+////////			{
+////////				aBool[nCh +40] = 1;
+////////			}
+
+//////////////////	//led_rgb[adc_current_chan] = 0x1f;
+////////		//*******************************************
+////////	// Проверка наличия 100 В
+////////	v100 = 0;
+////////			
+////////	ADC_set_config(0x0003); //0x1051) смещение Внутреннее - буфер канал 4
+////////	HAL_Delay(adc_delay);
+////////		
+////////	ADC_set_mode(0x8009);  // calibrate zero
+////////	HAL_Delay(adc_delay);
+////////	ADC_set_mode(0x800a);  // calibrate full-scale
+////////		
+////////	HAL_Delay(adc_delay);
+////////	ADC_set_mode(0x0009);  // return to continuous reads
+////////	HAL_Delay(adc_delay);
+
+////////	//led_rgb[adc_current_chan] = 0x4f;
+
+////////	ADC_read(1, adc_delay); // buffer flush
+////////	ADC_read(1, adc_delay); // buffer flush
+////////	v100 = ADC_read(n, adc_delay); // Измерение 100 В.
+////////	HAL_Delay(adc_delay);
+////////	if (s <=  _constBipol)
+////////	{
+////////		s = _constBipol -s ;
+////////	}
+////////	else
+////////	{
+////////	 s = 0;
+////////	}
+////////	v100 = s/32897;
+////////	
+////////	
+////////	if (v100 < _v100)
+////////	{
+////////		aWord[140] 	= aWord[140] | 0x4;
+////////		aWord[222 ] = aWord[222] | 1 << nCh;
+////////	}
+////////	else
+////////	{
+////////		aWord[140] &=  0xFB;
+////////		aWord[222] &= ~ (1<<nCh);
+////////	}
+////////	
+////////// сопротивление изоляции 1
+////////	
+////////	ADC_set_config(0x0000);//(0x0080); 	//	(0x1050); //0x1050) смещение внешнее REFin2+ REFin2- буфер канал 1 
+////////	HAL_Delay(adc_delay);		
+////////	ADC_set_mode(0x8009);  // calibrate zero
+////////	HAL_Delay(adc_delay);			
+////////	ADC_set_mode(0x800a);  // calibrate full-scale
+////////	HAL_Delay(adc_delay);
+////////			
+
+////////			
+////////	ADC_set_mode(0x0009);  // return to continuous reads
+////////	HAL_Delay(adc_delay);
+////////			
+//////////	HAL_Delay(adc_delay);
+////////	ADC_read(1, adc_delay); // buffer flush	
+////////	ADC_read(1, adc_delay); // buffer flush
+////////	s = ADC_read(n, adc_delay);
+////////	if (s > _constBipol	){s = 0;} //s - _Voltconst;}
+////////	else {s = _constBipol - s;}	
+
+////////	R=s;
+
+////////	
+//////////	R = 2396*16.*1024.*1024 / s;
+//////////	R= R/1.2025;
+////////	
+////////	R=458*16.*1024.*1024 / s;  //470*16.*1024.*1024 / s;
+
+
+////////	
+//////////	R *= 2396.;
+////////	R -= 1047.0;
+////////	RZ[1] = R;
+//////////	R -= 0937.93286;
+
+
+//////////	printf("Ins R: %u KOhm\n------------------\n", (unsigned int)R);
+//////////	RZ[0] = R;	// Сопротивление изоляции 1
+////////	R = R/16;
+////////		if (R>0xFFFF){R=0xFFFF;}
+////////		float RzM= 0;
+////////		float RzP =0;
+////////		float Ux = 0;
+////////		float Rp = 0;
+////////		float Rm = 0;
+////////		
+////////		RzP = R;
+////////		
+////////		RzM = aWord[170+nCh];
+////////		
+////////		if (RzM>=RzP)
+////////		{
+////////			kbipol = RzM/RzP;
+////////		}
+////////		else
+////////		{
+////////			kbipol = RzP/RzM;;
+////////		}
+////////		
+////////		Ux = 100*(kbipol-1)/(kbipol+1);
+////////		
+////////		Rm = (100 -Ux)*RzM/100;
+////////				
+////////		aWord[150 + nCh] = R; // измеренное значение
+////////		
+////////		aWord[50+nCh]=Rm;
+//////////		
+//////////		arrWord[50+nCh] = (arrWord[150+nCh]+arrWord[170+nCh])/2;
+//////////		
+//////////		R=arrWord[50+nCh];
+////////		
+//////////		kbipol = arrWord[170+nCh]
+////////		
+////////		delta = (uint8_t)(aWord[nCh]>>8)*0.01; //230717
+////////	
+////////		if (Rm < (aWord[nCh +10]-aWord[nCh +10]*delta))// | (R > (arrWord[nCh +10]+arrWord[nCh +10]*delta)))
+////////		{ 
+////////			aBool[nCh +20] = 0;	// выход за пределы для канала сопротивления изоляции 1
+////////		}
+////////		else
+////////		{
+////////			aBool[nCh +20] = 1;
+////////		}
+////////	
+////////// Сопротивление изолияции 2	
+////////		//led_rgb[adc_current_chan] = 0x1f;
+
+////////	ADC_set_config(0x0001); //(0x0081); //0x1051) Смещение внутреннее ....смещение внешнее REFin2+ REFin2- буфер канал 1 
+////////	HAL_Delay(adc_delay);
+
+//////////	test_Status = ADC_Status();
+////////		
+////////	ADC_set_mode(0x8009);  // calibrate zero
+////////	HAL_Delay(adc_delay);
+////////	ADC_set_mode(0x800a);  // calibrate full-scale
+////////	HAL_Delay(adc_delay);
+////////	ADC_set_mode(0x0009);  // return to continuous reads
+////////	HAL_Delay(adc_delay);
+
+////////	//led_rgb[adc_current_chan] = 0x4f;
+
+////////	ADC_read(1, adc_delay); // buffer flush
+////////	ADC_read(1, adc_delay); // buffer flush
+////////	s = ADC_read(n, adc_delay);
+////////	
+////////	if (s > _constBipol	){s = 0;} //s - _Voltconst;}
+////////	else {s = _constBipol - s;}	
+
+////////	R=s;
+
+
+////////	
+//////////	R = 2396*16.*1024.*1024 / s;
+//////////	R= R/1.2025;
+////////	
+////////	R=458 *16.*1024.*1024 / s;			//470*16.*1024.*1024 / s;
+
+
+////////	
+//////////	R *= 2396.;
+////////	R -= 1047.0;
+////////	RZ[1] = R;
+//////////	R -= 0937.93286;
+
+
+//////////	printf("Ins R: %u KOhm\n------------------\n", (unsigned int)R);
+//////////	RZ[0] = R;	// Сопротивление изоляции 1
+////////	R = R/16;
+////////	if (R>0xFFFF){R=0xFFFF;}		
+////////		RzP = R;
+////////		aWord[160 + nCh] = R; 
+////////		RzM = aWord[180+nCh];
+////////		if (RzM>=RzP)
+////////		{
+////////			kbipol = RzM/RzP;
+////////		}
+////////		else
+////////		{
+////////			kbipol = RzP/RzM;;
+////////		}
+////////		
+////////		Ux = 100*(kbipol-1)/(kbipol+1);
+////////		Rm = (100 -Ux)*RzM/100;
+////////		
+////////		aWord[60+nCh]=Rm;
+////////		
+////////		// измеренное значение
+////////	
+//////////	arrWord[60+nCh] = (arrWord[160+nCh]+arrWord[180+nCh])/2;
+//////////	R=arrWord[60+nCh];
+
+//////////	arrWord[60 + nCh] = R; // измеренное значение сопротивления изоляции 2	
+////////	
+////////	delta = (uint8_t)(aWord[nCh]>>8)*0.01;// 230717
+////////	if (Rm < (aWord[nCh +20]-aWord[nCh +20]*delta))//| (R > (arrWord[nCh +20]+arrWord[nCh +20]*delta)))
+////////	{ 
+////////		aBool[nCh +30] = 0;	// выход за пределы для канала сопротивления изоляции 1 ps фиксируется только вниз
+////////	}
+////////	else
+////////	{
+////////		aBool[nCh +30] = 1;	
+////////	}
+
+//////////	ok &= (R >= 40000.);
+//////////////////	if (arrBool[nCh + 20] & arrBool[nCh +30] & arrBool[nCh +40]&arrBool[nCh+50])
+//////////////////	{ arrBool[nCh+60]=1; } // allarm
+
+////////}
+////	void ADC_measure_minus(uint8_t nCh, uint16_t* aWord, _Bool* aBool) 
+////	{
+////	extern uint32_t adc_delay;
+////	uint32_t n = 16;//16;
+////	uint32_t s;
+////	float v100; // Временно напряжение 100 вольт
+////	float R = 20000.0;
+////	int ok = 1;
+////	float delta = 0.2;
+////		
+////		// Сопротивление Шлейфа
+
+//////	ADC_set_config(0x1012); // Внешний REFin1+ REFin2+  Ain 3 (+) буферный усилитель униполярный режим
+//////	HAL_Delay(adc_delay);
+
+//////	ADC_set_mode(0x8009);  // calibrate zero
+//////	HAL_Delay(adc_delay);
+//////	ADC_set_mode(0x800a);  // calibrate full-scale
+//////	HAL_Delay(adc_delay);
+//////	ADC_set_mode(0x0009);  // return to continuous reads
+//////	HAL_Delay(adc_delay);
+
+
+//////	ADC_read(1, adc_delay); // buffer flush
+//////	ADC_read(1, adc_delay); // buffer flush
+//////	s = ADC_read(n, adc_delay);
+
+//////	R *= s;
+//////	if (s <=0x00FFFAD7)
+//////	{R /= (0x00FFFAD7 - s);}
+//////	else 
+//////	{R /= (s - 0x00FFFAD7);}	
+//////	if (R > 31.0)
+//////	{R -= 31.0;}  // TBU effective serial resistance
+////////	printf("Loop R: %.2f Ohm\n------------------\n", R);
+////// RZ[2] = R;	
+
+//////	// Сопротивление Шлейфа
+//////if (R>65535){R=65535;}
+
+////////if((arrWord[70+nCh]<_LoopUpMin)& (R>_LoopUpMax)) // Скачек пока не надо
+////////{ // таким образом фиксируем обрыв кабеля
+////////			{
+////////				arrBool[nCh+50]=0;
+////////			}
+////////}	
+////////if (R<_LoopUpMax)
+////////			{
+////////				arrBool[nCh+50]=1;
+////////			}
+
+//////arrWord[70 + nCh] = R; // измеренное значение
+////////диапазон 	
+//////			delta = ((uint8_t)arrWord[nCh])*0.01; //230717
+//////		// Сопротивление шлейфа
+
+//////			if (R < (arrWord[nCh +30]-arrWord[nCh +30]*delta)) // | (R > (arrWord[nCh +30]+arrWord[nCh +30]*delta)))
+//////			{ 
+//////				arrBool[nCh +40] = 0;	// выход за пределы для канала вниз
+//////			}
+//////			else
+//////			{
+//////				arrBool[nCh +40] = 1;
+//////			}
+
+//////////////	//led_rgb[adc_current_chan] = 0x1f;
+////		//*******************************************
+////	// Проверка наличия 100 В
+////	v100 = 0;
+////			
+////	ADC_set_config(0x0003);  // биполярный смещение от IN1 без буфера ....(0x1093); //0x1051) смещение Внутреннее - буфер канал 4
+////	HAL_Delay(adc_delay);
+////		
+////	ADC_set_mode(0x8009);  // calibrate zero
+////	HAL_Delay(adc_delay);
+////	ADC_set_mode(0x800a);  // calibrate full-scale
+////		
+////	HAL_Delay(adc_delay);
+////	ADC_set_mode(0x0009);  // return to continuous reads
+////	HAL_Delay(adc_delay);
+
+////	//led_rgb[adc_current_chan] = 0x4f;
+
+////	ADC_read(1, adc_delay); // buffer flush
+////	ADC_read(1, adc_delay); // buffer flush
+////	
+////	s = ADC_read(n, adc_delay); // Измерение 100 В.
+////	
+////	if (s >=  _constBipol)
+////	{
+////		s = s -_constBipol;
+////	}
+////	else
+////	{
+////	 s = 0;
+////	}
+////	v100 = s/32897;
+////	
+
+////	HAL_Delay(adc_delay);
+////	
+////	if (v100 < _v100)
+////	{
+////		aWord[140] 	= aWord[140] | 0x2;
+////		aWord[221 ] = aWord[221] | 1 << nCh;
+////	}
+////	else
+////	{
+////		aWord[140] &=  0xFD;
+////		aWord[221] &= ~ (1<<nCh);
+////	}
+////	
+////// сопротивление изоляции 1
+////	
+////	ADC_set_config(0x0000); //(0x0080); 	//	(0x1050); //0x1050) смещение внешнее REFin2+ REFin2- буфер канал 1 
+////	HAL_Delay(adc_delay);		
+////	ADC_set_mode(0x8009);  // calibrate zero
+////	HAL_Delay(adc_delay);			
+////	ADC_set_mode(0x800a);  // calibrate full-scale
+////	HAL_Delay(adc_delay);
+////			
+
+////			
+////	ADC_set_mode(0x0009);  // return to continuous reads
+////	HAL_Delay(adc_delay);
+////			
+//////	HAL_Delay(adc_delay);
+////	ADC_read(1, adc_delay); // buffer flush	
+////	ADC_read(1, adc_delay); // buffer flush
+////	s = ADC_read(n, adc_delay);
+////	if (s < _constBipol_minus	){s = 0;} //s - _Voltconst;}
+////	else {s = s -_constBipol_minus;}	
+////	
+////	
+////	R=s;
+
+////	
+////	
+//////	R = 2396*16.*1024.*1024 / s;
+//////	R= R/1.2625;
+
+////	R= 481*16.*1024.*1024 / s; //470*16.*1024.*1024 / s;
+////	
+////	
+//////	R *= 2396.;
+////	R -= 1047.0;
+////	RZ[1] = R;
+//////	R -= 0937.93286;
+
+
+//////	printf("Ins R: %u KOhm\n------------------\n", (unsigned int)R);
+//////	RZ[0] = R;	// Сопротивление изоляции 1
+////	R = R/16;
+////		if (R>0xFFFF){R=0xFFFF;}
+////		aWord[170 + nCh] = R; // измеренное значение
+////		
+//////		delta = (uint8_t)(arrWord[nCh]>>8)*0.01; //230717
+//////	
+//////		if (R < (arrWord[nCh +10]-arrWord[nCh +10]*delta))// | (R > (arrWord[nCh +10]+arrWord[nCh +10]*delta)))
+//////		{ 
+//////			arrBool[nCh +20] = 0;	// выход за пределы для канала сопротивления изоляции 1
+//////		}
+//////		else
+//////		{
+//////			arrBool[nCh +20] = 1;
+//////		}
+////	
+////// Сопротивление изолияции 2	
+////		//led_rgb[adc_current_chan] = 0x1f;
+
+////	ADC_set_config (0x0001); //(0x0081); //0x1051) Смещение внутреннее ....смещение внешнее REFin2+ REFin2- буфер канал 1 
+////	HAL_Delay(adc_delay);
+
+//////	test_Status = ADC_Status();
+////		
+////	ADC_set_mode(0x8009);  // calibrate zero
+////	HAL_Delay(adc_delay);
+////	ADC_set_mode(0x800a);  // calibrate full-scale
+////	HAL_Delay(adc_delay);
+////	ADC_set_mode(0x0009);  // return to continuous reads
+////	HAL_Delay(adc_delay);
+
+////	//led_rgb[adc_current_chan] = 0x4f;
+
+////	ADC_read(1, adc_delay); // buffer flush
+////	ADC_read(1, adc_delay); // buffer flush
+////	s = ADC_read(n, adc_delay);
+
+////	if (s < _constBipol_minus	){s = 0;} //s - _Voltconst;}
+////	else {s = s -_constBipol_minus;}	
+
+////	
+////	R=s;
+
+////	
+////	
+//////	R = 2396*16.*1024.*1024 / s;
+//////	R= R/1.2625;
+////	
+////	R= 481*16.*1024.*1024 / s;	//470*16.*1024.*1024 / s;
+
+////	
+//////	callFlo[nCh] = R;
+//////	
+//////	R *= 2396.;
+////	R -= 1047.0;
+////	RZ[1] = R;
+//////	R -= 0937.93286;
+
+
+//////	printf("Ins R: %u KOhm\n------------------\n", (unsigned int)R);
+//////	RZ[0] = R;	// Сопротивление изоляции 2
+////	R = R/16;
+////	if (R>0xFFFF){R=0xFFFF;}
+
+////	aWord[180 + nCh] = R; // измеренное значение сопротивления изоляции 2	
+//////	delta = (uint8_t)(arrWord[nCh]>>8)*0.01;// 230717
+//////	if (R < (arrWord[nCh +20]-arrWord[nCh +20]*delta))//| (R > (arrWord[nCh +20]+arrWord[nCh +20]*delta)))
+//////	{ 
+//////		arrBool[nCh +30] = 0;	// выход за пределы для канала сопротивления изоляции 1 ps фиксируется только вниз
+//////	}
+//////	else
+//////	{
+//////		arrBool[nCh +30] = 1;	
+//////	}
+
+//////	ok &= (R >= 40000.);
+////////////	if (arrBool[nCh + 20] & arrBool[nCh +30] & arrBool[nCh +40]&arrBool[nCh+50])
+////////////	{ arrBool[nCh+60]=1; } // allarm
+
+////}

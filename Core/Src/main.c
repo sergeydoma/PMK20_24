@@ -372,6 +372,11 @@ int main(void)
 	{
 			if ((arrWord[i+200]==0) | (arrWord[i+200] == 0xFFFF))
 			{arrWord[i+200]=_setVolt;}
+			if((arrWord[i] == 0) | (arrWord[i] == 0xFFFF))
+			{
+				arrWord[i]=0x1414;
+				arrWord[250 + i] = 0x0A0A; // уставка предупредительной сигнализации по умолчанию
+			}
 	}
 	arrWord[140]=0;
 	arrWord[380]=10;
@@ -594,21 +599,26 @@ int main(void)
 								case 3:									
 									break;
 								case 4:
-										ADC_measure_minus(adc_current, arrWord,arrBoolTemp);
+										ADC_measure_minus(adc_current, arrWordBipol,arrBoolTemp);
 									break;
-								case 5:									
+								case 5:	
+										for(int i = 0; i<10;i++)
+										{									
+											arrWord[170+i] = arrWordBipol[170+i]; // сопротивление изоляции 1 при - смещении
+											arrWord[180+i] = arrWordBipol[180+i]; // сопротивление изоляции 2 при - смещении
+										}
 									break;
 								case 6:									
 								break;
 								case 7:										
 								break;
 								case 8:
-									ADC_measure_plus(adc_current, arrWord,arrBool,arrWordBipol, arrBoolBipol);
+									ADC_measure_plus(adc_current,arrWordBipol, arrBoolBipol);
 									break;
 								case 9:
 									for(int i = 0; i<10;i++)
 									{
-										arrWord[70+1] = arrWordBipol[70+i]; // сопротивление шлейфа
+										arrWord[70+i] = arrWordBipol[70+i]; // сопротивление шлейфа
 										arrBool[40+i] = arrBoolBipol[40+i]; // авария сопротивления шлейфа
 
 										arrWord[50+i] = arrWordBipol[50+i]; // сопротивление изоляции 1
@@ -616,7 +626,14 @@ int main(void)
 										
 										arrWord[60+i] = arrWordBipol[60+i]; // сопротивление изоляции 2
 										arrBool[30+i] = arrBoolBipol[30+i]; // авария изоляции 2
+										
+										arrWord[150+i] = arrWordBipol[150+i];
+										arrWord[160+i] = arrWordBipol[160+i];
+										
+//										arrBool[50+i] = arrBoolBipol[50+i];// обрыв кабеля
 									}
+									break;
+								case 10:
 									break;
               	default:
               		break;
@@ -630,6 +647,10 @@ int main(void)
 							arrBool[adc_current+30]=1;
 							arrBool[adc_current+40]=1;
 							arrBool[adc_current+50]=1;
+//							arrBool[100 + adc_current]=0;
+							arrBool[110 + adc_current] = 1; // Предупреждение Riz1
+							arrBool[120 + adc_current] = 1; // Предупреждение Riz2
+							arrBool[130 + adc_current] = 1; // Предупреждение Rloop
 							
 							//							ADC_measure(adc_current, arrWord, arrBoolTemp, startSett); // монитринг только включеных калалов
 						}
@@ -645,28 +666,34 @@ int main(void)
               	case 0:									
               		break;
               	case 1:
-										ADC_measureVolt(adc_current,arrWord,arrBoolTemp);
+										ADC_measureVolt(adc_current,arrWord,arrBool);
               		break;
 								case 2:										
 									break;
 								case 3:									
 									break;
 								case 4:
+									
 										ADC_measure_minus(adc_current, arrWord,arrBoolTemp);
 									break;
-								case 5:									
+								case 5:
+										for(int i = 0; i<10;i++)
+										{									
+											arrWordBipol[170+i] = arrWord[170+i]; // сопротивление изоляции 1 при - смещении
+											arrWordBipol[180+i] = arrWord[180+i]; // сопротивление изоляции 2 при - смещении
+										}
 									break;
 								case 6:									
 								break;
 								case 7:										
 								break;
 								case 8:
-									ADC_measure_plus(adc_current, arrWord,arrBool, arrWordBipol, arrBoolBipol);
+									ADC_measure_plus(adc_current, arrWordBipol, arrBoolBipol);
 									break;
 								case 9:
 									for(int i = 0; i<10;i++)
 									{
-										arrWord[70+1] = arrWordBipol[70+i]; // сопротивление шлейфа
+										arrWord[70+i] = arrWordBipol[70+i]; // сопротивление шлейфа
 										arrBool[40+i] = arrBoolBipol[40+i]; // авария сопротивления шлейфа
 
 										arrWord[50+i] = arrWordBipol[50+i]; // сопротивление изоляции 1
@@ -674,6 +701,11 @@ int main(void)
 										
 										arrWord[60+i] = arrWordBipol[60+i]; // сопротивление изоляции 2
 										arrBool[30+i] = arrBoolBipol[30+i]; // авария изоляции 2
+										
+										arrWord[150+i] = arrWordBipol[150+i]; // сопротивление изоляции 1 при + смещении
+										arrWord[160+i] = arrWordBipol[160+i];	// сопротивление изоляции 2 при + смещениии
+										
+										
 									}
 //									timeModeEon = 1; 
 									break;
@@ -1783,16 +1815,16 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 									
 							mbAddr = arrI2c_R[0]+ i2cAddr - 1;
 							modeEon = arrI2c_R[10];	
-							hvAllarm = arrI2c_R[11];
+//							hvAllarm = arrI2c_R[11];
 								
-							if(hvAllarm)
-								{
-									arrWord[140] 	= arrWord[140] | 0x2;
-								}
-							else
-								{
-									arrWord[140] = arrWord[140]&1;
-								}
+////////							if(hvAllarm)
+////////								{
+////////									arrWord[140] 	= arrWord[140] | 0x2;
+////////								}
+////////							else
+////////								{
+////////									arrWord[140] = arrWord[140]&1;
+////////								}
 								
 							if((arrWord[140]&2)|(arrWord[140]&4))
 								
