@@ -394,4 +394,4 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
 			
 		} 
 
-		    
+	// test git    
