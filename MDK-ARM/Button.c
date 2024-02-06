@@ -49,29 +49,6 @@ _Bool DeltaBool(uint16_t delay) // Проверка не нажата хотя �
 	return 0;
 } 
 
-
-//_Bool oneButtomPush() // нажата хотябы одна кнопка
-//{
-//_Bool Out;
-//  Out = 0;
-//  button[0]= 0;//HAL_GPIO_ReadPin(BT1_GPIO_Port, BT1_Pin);
-//  button[1]= 0;//HAL_GPIO_ReadPin(BT2_GPIO_Port, BT2_Pin);
-//  button[2]= 0;//HAL_GPIO_ReadPin(BT3_GPIO_Port, BT3_Pin);
-//  button[3]= 0;//HAL_GPIO_ReadPin(BT4_GPIO_Port, BT4_Pin);
-//  button[4]= 0;//HAL_GPIO_ReadPin(BT5_GPIO_Port, BT5_Pin); // ???? ?????? USART3
-//  button[5]= HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_0);            //HAL_GPIO_ReadPin(BT6_GPIO_Port, BT6_Pin); // ???? ?????? USART3
-//  button[6]= 0;//HAL_GPIO_ReadPin(BT7_GPIO_Port, BT7_Pin);
-//  button[7]= 0;//HAL_GPIO_ReadPin(BT8_GPIO_Port, BT8_Pin);
-//  button[8]= 0;//HAL_GPIO_ReadPin(BT9_GPIO_Port, BT9_Pin);
-//  button[9]= 0;//HAL_GPIO_ReadPin(BT10_GPIO_Port, BT10_Pin);
-// for(int i =0;i <10;i++)
-//  {
-//    Out = Out | button[i];
-//  }
-// return Out;
-//}
-// Селекция нажатия кнопки по длительности
-
 // Вариант 2
 uint8_t timePush (uint16_t delayPush, uint8_t numChannel)
 {
@@ -138,36 +115,37 @@ _Bool timeNoPush (uint16_t delay, uint8_t numChannel) //
   
               
   //*****************************************************************************
-uint8_t ModeCH (uint8_t nCh, _Bool* Alarm, uint16_t* wordSet, uint8_t adc_current) // wordSet массив типа arrWord
+uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_current) // wordSet массив типа arrWord
   {
 
 //	static uint8_t mode[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 //	static uint8_t out;
 		uint8_t out;
 //	static uint8_t temp;	
-		
+//******************************************************************	0	
 		if (wordSet[nCh+40] == 0)  // Режим работы канала 
     {
 			Alarm[nCh+50] = 1; 
           
       tempPush = timePush (4000, nCh);    // Селектор длительности нажатия
 	
-        switch (tempPush)
+			switch (tempPush) // режим пуска
         {
           case 0:
           wordSet[nCh+40] = 0; // monitor off
           break;          
           case 1:
-          wordSet[nCh+40] = 1; // redi monitor
+						wordSet[nCh+40] = 1; // redi monitor короткое нажатие
           break;
           case 2:
-          wordSet[nCh+40] = 3; // select 1
+          wordSet[nCh+40] = 3; // select 1  длинное нажатие
           break;
         }               
-				led_rgb[nCh] = _Yellow; // желтый //Nblinck(2, 0x000f0000, 500);                                          
-				out = 0;
-        
-    } 
+				led_rgb[nCh] = _Blue; // Синий мониторинг выключен желтый //Nblinck(2, 0x000f0000, 500);                                          
+//				out = 0;
+
+			} 
+		//******************************************************************** 1       
       else if (wordSet[nCh+40] == 1)
       {
 				Alarm[nCh+50] = 1; 
@@ -185,21 +163,12 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm, uint16_t* wordSet, uint8_t adc_curren
           wordSet[nCh+40] = 1; // select 1
           break;
         }
-//////				if (((wordSet[nCh]==(_mode30P | _mode30P<<8))|(wordSet[nCh]==(_mode20P | _mode20P<<8)) | (wordSet[nCh] ==(_mode10P | _mode10P<<8)))==0)
-//////				{
-//////					wordSet[nCh] = _mode20P;
-//////					
-//////					if ((wordSet[nCh]) == _mode20P)
-//////						{
-//////							wordSet[nCh] = _mode20P | (_mode20P<<8);
-//////						}
-//////					
-//////				} // 230717
+
         led_rgb[nCh] = Nblinck( wordSet[nCh], _Green, 500, nCh); // 
         
-					out = 0;
+//					out = 0;
         }
-      
+ //******************************************************************** 2            
       else if (wordSet[nCh+40] == 2)
       {
         tempPush = timePush (4000, nCh); 
@@ -211,22 +180,28 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm, uint16_t* wordSet, uint8_t adc_curren
           break;          
           case 1:
           wordSet[nCh+40] = 2; // redi monitor
-					Alarm[nCh+50] = 1; // ручное квитирование обрыва кабеля
+//					Alarm[nCh+50] = 1; // ручное квитирование обрыва кабеля
           break;
           case 2:
           wordSet[nCh+40] = 0; // select 1
-					Alarm[nCh+50] = 1; // ручное квитирование обрыва кабеля
+//					Alarm[nCh+50] = 1; // ручное квитирование обрыва кабеля
           break;
         }
 				if (Alarm[nCh+100] !=0)
 				{
-					led_rgb[nCh] = Alarm_blinck (_Red,_Yellow, 500, nCh);				
+					led_rgb[nCh] = Alarm_blinck (_Red,_Yellow, 500, nCh);			//_Yellow	напряжение в кабеле более 10 В
 				}
-        else if (Alarm[nCh+60] == 0)
-        {                    
+        else if (	(Alarm[nCh+20] & Alarm[nCh+30] & Alarm[nCh+40])==0)																	//(Alarm[nCh+60] == 0)
+        {      
+							wordSet[nCh+40] = 7; // Авария
 //								wordSet[nCh+40] = 6;
 								led_rgb[nCh] =  _Red; 
-        }			
+        }	
+				else if ((Alarm[110 + nCh]& Alarm[120 + nCh] & Alarm [130 + nCh])==0)
+				{
+					wordSet[nCh + 40] = 6; // Предупреждение
+					led_rgb[nCh] = _Yellow;
+				}
 				else	
 				{
 				led_rgb[nCh] = _Green; //Nblinck( wordSet[nCh], _Green, 500); // 
@@ -239,8 +214,9 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm, uint16_t* wordSet, uint8_t adc_curren
 //						led_rgb[nCh] = _Green;
 //					}
 				}
-				out = 1;	 
-    }
+//				out = 1;	 
+			}
+//******************************************************************** 3       
        else if (wordSet[nCh+40] == 3)
         {
         tempPush = timePush (4000, nCh);    
@@ -255,19 +231,23 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm, uint16_t* wordSet, uint8_t adc_curren
          
           break;
           case 2: 											// Monitoring Grn
-						wordSet[nCh] = _mode10P; // уходим 
+						wordSet[nCh] = _mode10P; // уходим
+						wordSet[250+nCh] = _mode10P>>1;
+					
 						if ((wordSet[nCh]) == _mode10P)
 						{
 							wordSet[nCh] = _mode10P | (_mode10P<<8);
+							wordSet[250+nCh] = (_mode10P>>1) | (_mode10P<<7);
 						}
 						wordSet[nCh+40] = 2; // Переходим на мониторинг с уставкой 10%					
 						
           break;
         }  
 				
-					led_rgb[nCh] = Nblinck( (_mode10P|_mode10P<<8) , _Yellow, 500, nCh); //  
+					led_rgb[nCh] = Nblinck( (_mode10P|_mode10P<<8) , _Blue, 500, nCh); // _Yellow 
         
         }
+//********************************************************************  4      
 				else if (wordSet[nCh+40] == 4) // выбираем уставку
       {
                  tempPush = timePush (4000, nCh);    
@@ -282,10 +262,11 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm, uint16_t* wordSet, uint8_t adc_curren
           break;
           case 2:
           wordSet[nCh] = _mode20P; // уходим
-					
+					wordSet[250 + nCh] = _mode20P>>1;
 						if ((wordSet[nCh]) == _mode20P)
 						{
 							wordSet[nCh] = _mode20P | (_mode20P<<8);
+							wordSet[250 + nCh] = (_mode20P>>1)  | (_mode20P<<7); // (_mode20P<<8)>2 = <<7
 						}
 						
 						
@@ -293,10 +274,11 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm, uint16_t* wordSet, uint8_t adc_curren
 									
           break;
         }  
-					led_rgb[nCh] = Nblinck( (_mode20P|_mode20P<<8) , _Yellow, 500, nCh); // 
+					led_rgb[nCh] = Nblinck( (_mode20P|_mode20P<<8) , _Blue, 500, nCh); // 
         
-			out =0;
+//			out =0;
       }
+//******************************************************************** 5        
         
       
       else if (wordSet[nCh+40] == 5)
@@ -313,11 +295,13 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm, uint16_t* wordSet, uint8_t adc_curren
           break;
           case 2:
           wordSet[nCh] = _mode30P; // уходим 
+					wordSet[250+nCh] = _mode30P>>1;
 					
 					if ((wordSet[nCh]) == _mode30P)
 						
 						{
 							wordSet[nCh] = _mode30P | (_mode30P<<8);
+							wordSet[250 + nCh] = (_mode30P>>1) | (_mode30P<<7);
 						}
 						 
 					wordSet[nCh+40] = 2; // select 1
@@ -325,50 +309,89 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm, uint16_t* wordSet, uint8_t adc_curren
           break;
         }  
 
-       led_rgb[nCh] = Nblinck(( _mode30P| _mode30P<<8) , _Yellow, 500, nCh); //2
-				out = 0;
+       led_rgb[nCh] = Nblinck(( _mode30P| _mode30P<<8) , _Blue, 500, nCh); //2
+//				out = 0;
       }
-			else if (wordSet[nCh+40] == 6)
+			//********************************************************************  6      
+				else if (wordSet[nCh+40] == 6)
+				{	
+					out = 0;
+					
+					tempPush = timePush (4000, nCh);    
+
+					switch (tempPush)
+					{
+					case 0:
+          wordSet[nCh+40] = 6; // monitor off
+          break;          
+          case 1:
+          wordSet[nCh+40] = 61; // redi monitor          
+          break;
+          case 2:
+          Alarm[nCh+20] = 1;
+					Alarm[nCh+30] = 1;
+					Alarm[nCh+40] = 1;
+					Alarm[nCh+50] = 1;
+					Alarm[nCh +110] = 1;
+					Alarm[nCh +120] = 1;
+					Alarm[nCh +130] = 1;
+          wordSet[nCh+40] = 0; // select 1		
+					}
+						
+					
+					
+					if (Alarm[110 + nCh]& Alarm[120 + nCh] & Alarm [130 + nCh])
+						{
+							wordSet[nCh+40] = 2;
+						}
+
+					else
+						{
+						wordSet[nCh+40] = 0; 
+						led_rgb[nCh]= _Blue;
+						}
+				
+					
+				}
+	//********************************************************************   7     
+			else if (wordSet[nCh+40] == 7)
 				{
+					
+					out = 0;
+
+					if ((Alarm[nCh+20] | Alarm[nCh+30] | Alarm[nCh+40]) ==0)
+					{
+						wordSet[nCh+40] = 2;
+					}
+					
         tempPush = timePush (4000, nCh);    
 
         switch (tempPush)
         {
           case 0:
-          wordSet[nCh+40] = 6; // monitor off
+          wordSet[nCh+40] = 7; // monitor off
           break;          
           case 1:
-					Alarm[nCh+20] = 1;
-					Alarm[nCh+30] = 1;
-					Alarm[nCh+40] = 1;
-					Alarm[nCh+50] = 1;
-					
-          wordSet[nCh+40] = 2; // redi monitor
-				
+						wordSet[nCh+40] = 71; // redi monitor  				
           break;
           case 2:
 					Alarm[nCh+20] = 1;
 					Alarm[nCh+30] = 1;
 					Alarm[nCh+40] = 1;
 					Alarm[nCh+50] = 1;
-					
+					Alarm[nCh +110] = 1;
+					Alarm[nCh +120] = 1;
+					Alarm[nCh +130] = 1;
           wordSet[nCh+40] = 0; // select 1					
           break;
         }		
 				led_rgb[nCh] =  _Red;       
-        out =1;   																								  
+//        out =1;   																								  
 			}
 
-      else
-      {
-			wordSet[nCh+40] = 0; 
-      led_rgb[nCh]= _Yellow;
-      }
-			
-			
 			
 			return out;
 			
 		} 
 
-    
+		    

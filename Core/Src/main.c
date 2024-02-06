@@ -76,7 +76,7 @@ int16_t blink; // для выбора режима упрвления миган
 		uint32_t lanTimer = 0;
 		uint8_t hvAllarm = 0;
 		
-		uint8_t lanCurr;// чтетчик для индикации работы сети
+		uint8_t lanCurr;// cтетчик для индикации работы сети
 		_Bool lanLed; // индикатор работы сети ?
 		uint16_t lanTemer;
 		uint32_t rlanTest;
@@ -240,33 +240,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 };
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 {
-//	if(huart->ErrorCode == HAL_UART_ERROR_ORE)
-//	{
-//		if (huart->ErrorCode == HAL_UART_ERROR_NONE)
-//		{
-//			arrWord[200]=0;
-//		}
-//		else if (huart->ErrorCode == HAL_UART_ERROR_PE)
-//		{
-//			arrWord[200]=1;
-//		}
-//		else if (huart->ErrorCode == HAL_UART_ERROR_NE)
-//		{
-//			arrWord[200]=2;
-//		}
-//		else if (huart->ErrorCode == HAL_UART_ERROR_FE)
-//		{
-//			arrWord[200]=3;
-//		}
-//		else if (huart->ErrorCode == HAL_UART_ERROR_ORE)
-//		{
-//			arrWord[200]=4;
-//		}
-//		else if (huart->ErrorCode == HAL_UART_ERROR_DMA)
-//		{
-//			arrWord[200]=5;
-//		}
-
 		HAL_UART_Receive_DMA(&huart2,(uint8_t*) &rer,1); // Перезапуск при ошибке
 }	
 /* USER CODE END PFP */
@@ -285,27 +258,6 @@ int main(void)
 
 {
   /* USER CODE BEGIN 1 */
-//	//ID CPU
-//	__UniqueID[0] = UniqueID[0];
-//	__UniqueID[1] = UniqueID[1];
-//	__UniqueID[2] = UniqueID[2];
-
-//	arrWord[100] = __UniqueID[0];
-//	arrWord[101] = __UniqueID[0]>>16;
-//	arrWord[102] = __UniqueID[1];
-//	arrWord[103] = __UniqueID[1]>>16;
-//	arrWord[104] = __UniqueID[2];
-//	arrWord[105] = __UniqueID[2]>>16;
-//	
-//	// Версия программы
-//	arrWord[90] = _version>>16;
-//	arrWord[91] = (uint16_t)_version;
-////	arrWord[92] = 20;
-////	arrWord[93] = 01;
-//// md5
-//	
-//		uint8_t result[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-//	 
 
 	
 		uint8_t tbyte;
@@ -313,27 +265,6 @@ int main(void)
 		_Bool flas_count = 0;
 		uint8_t ff_count =0;
 		
-		
-//		while (!flas_count)
-//		{
-//			tbyte =	*(uint8_t*)(0x8000000+flas_length);
-//			if (tbyte == 0xFF)
-//			{
-//			 
-//				if(ff_count >= 15)
-//				{
-//				flas_count = 1;
-//				}
-//				ff_count++;
-//			}
-//			else
-//			{
-//				ff_count = 0;
-//			}
-//				
-//			flas_length++;
-//		}	
-//		flas_length = flas_length - 16; // адрес первого FF
 		
 		
 //		tbyte =	*(uint8_t*)0x8000000; // прочитать байты;
@@ -368,6 +299,8 @@ int main(void)
 	arrBool[40]=1; arrBool[41]=1; arrBool[42]=1;arrBool[43]=1;arrBool[44]=1; arrBool[45]=1; arrBool[46]=1; arrBool[47]=1; arrBool[48]=1; arrBool[49]=1;
 	arrBool[50]=1; arrBool[51]=1; arrBool[52]=1;arrBool[53]=1;arrBool[54]=1; arrBool[55]=1; arrBool[56]=1; arrBool[57]=1; arrBool[58]=1; arrBool[59]=1;
 	arrBool[110]=1; arrBool[111]=1; arrBool[112]=1;arrBool[113]=1;arrBool[114]=1; arrBool[115]=1; arrBool[116]=1; arrBool[117]=1; arrBool[118]=1; arrBool[119]=1;
+	arrBool[120]=1; arrBool[121]=1; arrBool[122]=1;arrBool[123]=1;arrBool[124]=1; arrBool[125]=1; arrBool[126]=1; arrBool[127]=1; arrBool[128]=1; arrBool[129]=1;
+	arrBool[130]=1; arrBool[131]=1; arrBool[132]=1;arrBool[133]=1;arrBool[134]=1; arrBool[135]=1; arrBool[136]=1; arrBool[137]=1; arrBool[138]=1; arrBool[139]=1;
 	for(int i = 0; i<10 ; i++)
 	{
 			if ((arrWord[i+200]==0) | (arrWord[i+200] == 0xFFFF))
@@ -375,8 +308,13 @@ int main(void)
 			if((arrWord[i] == 0) | (arrWord[i] == 0xFFFF))
 			{
 				arrWord[i]=0x1414;
-				arrWord[250 + i] = 0x0A0A; // уставка предупредительной сигнализации по умолчанию
+//				arrWord[250 + i] = 0x0A0A; // уставка предупредительной сигнализации по умолчанию
+				
 			}
+			if((arrWord[250 + i] == 0) | (arrWord[250+i] == 0xFFFF))
+				{
+					arrWord[250+i] = 0x0A0A;
+				}
 	}
 	arrWord[140]=0;
 	arrWord[380]=10;
@@ -589,7 +527,14 @@ int main(void)
 							{
 								switch (modeEon)
               {
-              	case 0:									
+              	case 0:		
+//										ADC_measure_minus(adc_current, arrWordBipol,arrBoolTemp);
+//										ADC_measure_plus(adc_current,arrWordBipol, arrBoolBipol);
+//										for(int i = 0; i<10;i++)
+//										{									
+//											arrWord[170+i] = arrWordBipol[170+i]; // сопротивление изоляции 1 при - смещении
+//											arrWord[180+i] = arrWordBipol[180+i]; // сопротивление изоляции 2 при - смещении
+//										}
               		break;
               	case 1:
 										ADC_measureVolt(adc_current,arrWord,arrBool);
@@ -606,6 +551,8 @@ int main(void)
 										{									
 											arrWord[170+i] = arrWordBipol[170+i]; // сопротивление изоляции 1 при - смещении
 											arrWord[180+i] = arrWordBipol[180+i]; // сопротивление изоляции 2 при - смещении
+											arrWord[140] = arrWordBipol[140];
+											arrWord[221] = arrWordBipol[221];
 										}
 									break;
 								case 6:									
@@ -629,6 +576,13 @@ int main(void)
 										
 										arrWord[150+i] = arrWordBipol[150+i];
 										arrWord[160+i] = arrWordBipol[160+i];
+										
+										arrBool[110 +i] = arrBoolBipol[110+i]; // Предупреждение изоляции 1
+										arrBool[120 +i] = arrBoolBipol[120+i]; // Предупреждение изоляции 2
+										arrBool[130 +i] = arrBoolBipol[130+i]; // Предупреждение шлейфа
+										
+										arrWord[140] = arrWordBipol[140];
+										arrWord[221] = arrWordBipol[221];
 										
 //										arrBool[50+i] = arrBoolBipol[50+i];// обрыв кабеля
 									}
@@ -673,14 +627,15 @@ int main(void)
 								case 3:									
 									break;
 								case 4:
-									
-										ADC_measure_minus(adc_current, arrWord,arrBoolTemp);
+										ADC_measure_minus(adc_current, arrWordBipol,arrBoolTemp);
 									break;
 								case 5:
 										for(int i = 0; i<10;i++)
 										{									
-											arrWordBipol[170+i] = arrWord[170+i]; // сопротивление изоляции 1 при - смещении
-											arrWordBipol[180+i] = arrWord[180+i]; // сопротивление изоляции 2 при - смещении
+											arrWord[170+i] = arrWordBipol[170+i]; // сопротивление изоляции 1 при - смещении
+											arrWord[180+i] = arrWordBipol[180+i]; // сопротивление изоляции 2 при - смещении
+											arrWord[140] = arrWordBipol[140];
+											arrWord[221] = arrWordBipol[221];
 										}
 									break;
 								case 6:									
@@ -705,6 +660,12 @@ int main(void)
 										arrWord[150+i] = arrWordBipol[150+i]; // сопротивление изоляции 1 при + смещении
 										arrWord[160+i] = arrWordBipol[160+i];	// сопротивление изоляции 2 при + смещениии
 										
+										arrBool[110 +i] = arrBoolBipol[110+i]; // Предупреждение изоляции 1
+										arrBool[120 +i] = arrBoolBipol[120+i]; // Предупреждение изоляции 2
+										arrBool[130 +i] = arrBoolBipol[130+i]; // Предупреждение шлейфа
+										
+										arrWord[140] = arrWordBipol[140];
+										arrWord[221] = arrWordBipol[221];
 										
 									}
 //									timeModeEon = 1; 
@@ -1776,7 +1737,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 									}
 									else
 									{
-										led_rgb[i]= _Blue;
+										led_rgb[i]= _Violet;
 									}
 								}
 								 
@@ -1891,6 +1852,10 @@ void preset_V(void)
 				{
 					ttr=1;
 				}	
+				if(arrWord[250+i] != res[250+i])
+				{
+					ttr=1;
+				}
 //			if (arrWord[i+40] !=res[i+40]){ttr=1;}
 					
 			

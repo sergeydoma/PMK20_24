@@ -91,13 +91,13 @@ void ADC_measure_minus(uint8_t nCh, uint16_t* aWord, _Bool* aBool)
 	
 	if (v100 < _v100)
 	{
-		arrWord[140] 	= arrWord[140] | 0x2;
-		arrWord[221 ] = arrWord[221] | 1 << nCh;
+		aWord[140] 	= aWord[140] | 0x2;
+		aWord[221 ] = aWord[221] | 1 << nCh;
 	}
 	else
 	{
-		arrWord[140] &=  0xFD;
-		arrWord[221] &= ~ (1<<nCh);
+		aWord[140] &=  0xFD;
+		aWord[221] &= ~ (1<<nCh);
 	}
 	
 // сопротивление изоляции 1 минус
@@ -232,8 +232,9 @@ if (R>65535){R=65535;}
 		//диапазон 	
 			delta = ((uint8_t)arrWord[nCh])*0.01; //230717
 		// Сопротивление шлейфа
+			setRz[nCh] = arrWord[nCh+30];
 
-			if (R < (arrWord[nCh +30]-arrWord[nCh +30]*delta)) // | (R > (arrWord[nCh +30]+arrWord[nCh +30]*delta)))
+			if (R < (setRz[nCh]-setRz[nCh]*delta)) // | (R > (arrWord[nCh +30]+arrWord[nCh +30]*delta)))
 			{ 
 				aBool[nCh +40] = 0;	// выход за пределы для канала вниз
 			}
@@ -244,6 +245,7 @@ if (R>65535){R=65535;}
 			
 																		/***** Предупреждение *****/
 		delta = (uint8_t)(arrWord[250 + nCh])*0.01;
+		
 		setRz[nCh] = arrWord[nCh+30];
 	
 		if (R < (setRz[nCh]-setRz[nCh]*delta))
@@ -305,13 +307,13 @@ if (R>65535){R=65535;}
 	
 	if (v100 < _v100)
 	{
-		arrWord[140] 	= arrWord[140] | 0x4;
-		arrWord[222 ] = arrWord[222] | 1 << nCh;
+		aWord[140] 	= aWord[140] | 0x4;
+		aWord[222 ] = aWord[222] | 1 << nCh;
 	}
 	else
 	{
-		arrWord[140] &=  0xFB;
-		arrWord[222] &= ~ (1<<nCh);
+		aWord[140] &=  0xFB;
+		aWord[222] &= ~ (1<<nCh);
 	}
 
 	
@@ -345,26 +347,15 @@ if (R>65535){R=65535;}
 	if (R>0xFFFF){R=0xFFFF;}
 		float RzM= 0;
 		float RzP =0;
-		float Ux = 0;
-		float Rp = 0;
-		float Rm = 0;
+		uint16_t Rcr;
 		
 		RzP = R;
 		aWord[150+nCh] = R;		
 		RzM =riz_m1[nCh] ;//aWord[170+nCh];		
-		if (RzM>=RzP)
-		{
-			kbipol = RzM/RzP;
-		}
-		else
-		{
-			kbipol = RzP/RzM;;
-		}
 		
-		Ux = 100*(kbipol-1)/(kbipol+1);		
-		Rm = (100 -Ux)*RzM/100;
+		Rcr = formula(RzM,RzP);
 			
-		aWord[50+nCh]=Rm;
+		aWord[50+nCh]= Rcr;
 //		
 //		arrWord[50+nCh] = (arrWord[150+nCh]+arrWord[170+nCh])/2;
 //		
@@ -376,7 +367,7 @@ if (R>65535){R=65535;}
 		
 		setRz[nCh] = arrWord[nCh+10];
 	
-		if (Rm < (setRz[nCh]-setRz[nCh]*delta))// | (R > (arrWord[nCh +10]+arrWord[nCh +10]*delta)))
+		if (Rcr < (setRz[nCh]-setRz[nCh]*delta))// | (R > (arrWord[nCh +10]+arrWord[nCh +10]*delta)))
 		{ 
 			aBool[nCh +20] = 0;	// выход за пределы для канала сопротивления изоляции 1
 		}
@@ -389,7 +380,7 @@ if (R>65535){R=65535;}
 		delta = (uint8_t)(arrWord[250 + nCh]>>8)*0.01;
 		setRz[nCh] = arrWord[nCh+10];
 	
-		if (Rm < (setRz[nCh]-setRz[nCh]*delta))
+		if (Rcr < (setRz[nCh]-setRz[nCh]*delta))
 		{ 
 			aBool[nCh +110] = 0;	// выход за пределы для канала сопротивления изоляции 1 предупредительно
 		}
@@ -431,28 +422,18 @@ if (R>65535){R=65535;}
 		RzP = R;
 		aWord[160 + nCh] = R; 
 		RzM =riz_m2[nCh] ;//aWord[180+nCh];
-		if (RzM>=RzP)
-		{
-			kbipol = RzM/RzP;
-		}
-		else
-		{
-			kbipol = RzP/RzM;;
-		}
+		Rcr = formula(RzM, RzP);
 		
-		Ux = 100*(kbipol-1)/(kbipol+1);
-		Rm = (100 -Ux)*RzM/100;
+		aWord[60+nCh]=Rcr;
 		
-		aWord[60+nCh]=Rm;
-		
-		// измеренное значение
+		// измеренное значение Сопротивление изолияции 2
 	
 	
-	delta = (uint8_t)(arrWord[nCh]>>8)*0.01;// 230717
+		delta = (uint8_t)(arrWord[nCh]>>8)*0.01;// 230717
 		
 		setRz[nCh] = arrWord[nCh+20];
 		
-		if (Rm < (setRz[nCh]-setRz[nCh]*delta))//| (R > (arrWord[nCh +20]+arrWord[nCh +20]*delta)))
+		if (Rcr < (setRz[nCh]-setRz[nCh]*delta))//| (R > (arrWord[nCh +20]+arrWord[nCh +20]*delta)))
 	{ 
 		aBool[nCh +30] = 0;	// выход за пределы для канала сопротивления изоляции 1 ps фиксируется только вниз
 	}
@@ -462,11 +443,12 @@ if (R>65535){R=65535;}
 	}
 
 																/***** Предупреждение *****/
+	
 		delta = (uint8_t)(arrWord[250 + nCh]>>8)*0.01;
 		
 		setRz[nCh] = arrWord[nCh+20];
 	
-		if (Rm < (setRz[nCh]-setRz[nCh]*delta))
+		if (Rcr < (setRz[nCh]-setRz[nCh]*delta))
 		{ 
 			aBool[nCh +120] = 0;	// выход за пределы для канала сопротивления изоляции 1 предупредительно
 		}
@@ -477,3 +459,35 @@ if (R>65535){R=65535;}
 
 
 }
+	uint16_t formula(float rdm, float rdp)
+	{
+		float uv = 0;
+		float k = 1;
+		float upmk = 100.0; // Наряжение смещения
+		float rcm = 0;
+		float rcp = 0;
+		float rc = 0;		
+		uint16_t out;
+		
+//		rcm = rcm*16;
+//		rcp = rcp*16;
+		
+		if (rdp>rdm)
+		{
+			k = (rdp + 2447/16)/(rdm +2447/16);	
+			uv = -(upmk*(k-1))/(k+1);
+		}
+		else
+		{
+			k = (rdm + 2447/16)/(rdp +2447/16);	
+			uv = (upmk*(k-1))/(k+1);
+		}
+		rcm = (((upmk - uv)/upmk)*(rdm + 2447/16)) - 2447/16;
+		rcp = (((upmk + uv)/upmk)*(rdp + 2447/16)) - 2447/16;
+		rc = (rcp+rcm)/2;
+		
+//		rc = rc/16;
+		out = (uint16_t) rc;
+		return out;
+	
+	}		

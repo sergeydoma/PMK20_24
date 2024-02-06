@@ -91,7 +91,7 @@ typedef struct
 /* Exported macro ------------------------------------------------------------*/
 /* USER CODE BEGIN EM */
 #ifndef _version
-#define _version 						23081000 // версия ПРО
+#define _version 						24020100 // версия ПРО
 #endif
 
 #ifndef _mode10P
@@ -139,7 +139,7 @@ typedef struct
 #endif
 
 #ifndef _Green
-#define _Green 					0x0000FF00	 //0x00004F00		// Зеленый цвет
+#define _Green 					0x00004F00	 //0x00004F00		// Зеленый цвет 0000FF00
 #endif
 
 #ifndef _GreenON
@@ -151,11 +151,15 @@ typedef struct
 #endif
 
 #ifndef _Blue
-#define _Blue 				0x000000FF		// Синий
+#define _Blue 				0x00000005		// Синий
+#endif
+
+#ifndef _Violet
+#define _Violet 				0x00050001	// Фиолетовый
 #endif
 
 #ifndef _Rins
-#define _Rins						5000		// Сопротивление изоляции
+#define _Rins						1000 // 231206  5000		// Сопротивление изоляции
 #endif
 
 
@@ -348,6 +352,7 @@ _Bool pause(uint16_t delta);
 
 void ADC_measure_plus(uint8_t nCh, uint16_t* aWord, _Bool* aBool);
 void ADC_measure_minus(uint8_t nCh, uint16_t* aWord, _Bool* aBool);
+uint16_t formula(float rdm, float rdp);
 
 /* USER CODE END Private defines */
 
