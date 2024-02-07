@@ -123,7 +123,6 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
 		uint8_t out;
 //	static uint8_t temp;	
 //******************************************************************	0	
-		switch(wordSet[nCh+40])
 		if (wordSet[nCh+40] == 0)  // Режим работы канала 
     {
 			Alarm[nCh+50] = 1; 
@@ -170,9 +169,7 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
 //					out = 0;
         }
  //******************************************************************** 2            
-      else if ((wordSet[nCh+40] == 2)&
-								(wordSet[nCh+40] != 61)
-							)
+      else if (wordSet[nCh+40] == 2)
 				
       {
         tempPush = timePush (4000, nCh); 
@@ -428,8 +425,8 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
 			
 			else if (wordSet[nCh+40] == 61)
 			{
-//				if (Alarm[nCh+20] == 1)
-//				{wordSet[nCh+40] = 62;}
+				if (Alarm[nCh+20] == 1)
+					{wordSet[nCh+40] = 62;}
 				led_rgb[nCh] = Alarm_blinck (_Yellow,_Black, 500, nCh);
 				
 				tempPush = timePush (4000, nCh);    
@@ -444,9 +441,8 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
           break;
           case 2:					
           wordSet[nCh+40] = 6; // select 1					
-          break; 
+          break;
 					
-					out = 0x01;
 				}
 
 		}
