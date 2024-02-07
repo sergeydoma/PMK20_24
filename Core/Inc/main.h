@@ -158,6 +158,10 @@ typedef struct
 #define _Violet 				0x00050001	// Фиолетовый
 #endif
 
+#ifndef _Black
+#define _Black				0x00000000	// Фиолетовый
+#endif
+
 #ifndef _Rins
 #define _Rins						1000 // 231206  5000		// Сопротивление изоляции
 #endif

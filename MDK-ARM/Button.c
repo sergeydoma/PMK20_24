@@ -123,6 +123,7 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
 		uint8_t out;
 //	static uint8_t temp;	
 //******************************************************************	0	
+		switch(wordSet[nCh+40])
 		if (wordSet[nCh+40] == 0)  // Режим работы канала 
     {
 			Alarm[nCh+50] = 1; 
@@ -169,7 +170,10 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
 //					out = 0;
         }
  //******************************************************************** 2            
-      else if (wordSet[nCh+40] == 2)
+      else if ((wordSet[nCh+40] == 2)&
+								(wordSet[nCh+40] != 61)
+							)
+				
       {
         tempPush = timePush (4000, nCh); 
 				
@@ -187,34 +191,31 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
 //					Alarm[nCh+50] = 1; // ручное квитирование обрыва кабеля
           break;
         }
-				if (Alarm[nCh+100] !=0)
-				{
-					led_rgb[nCh] = Alarm_blinck (_Red,_Yellow, 500, nCh);			//_Yellow	напряжение в кабеле более 10 В
-				}
+				if ((Alarm[110+nCh] ==0))
+					{						
+						 
+						wordSet[nCh+40]= 8; // АВАРИЯ ПО НАПРЯЖЕНИЮ					
+					}
         else if (	(Alarm[nCh+20] & Alarm[nCh+30] & Alarm[nCh+40])==0)																	//(Alarm[nCh+60] == 0)
-        {      
-							wordSet[nCh+40] = 7; // Авария
-//								wordSet[nCh+40] = 6;
-								led_rgb[nCh] =  _Red; 
-        }	
-				else if ((Alarm[110 + nCh]& Alarm[120 + nCh] & Alarm [130 + nCh])==0)
-				{
-					wordSet[nCh + 40] = 6; // Предупреждение
-					led_rgb[nCh] = _Yellow;
-				}
+					{      
+								wordSet[nCh+40] = 7; // Авария
+	//								wordSet[nCh+40] = 6;
+									led_rgb[nCh] =  _Red; 
+					}	
+				else if (((Alarm[110 + nCh]& Alarm[120 + nCh] & Alarm [130 + nCh])==0)& 
+					(wordSet[nCh + 40] != 61)
+						)
+					{
+						wordSet[nCh + 40] = 6; // Предупреждение
+						led_rgb[nCh] = _Yellow;
+					}
+				
 				else	
 				{
 				led_rgb[nCh] = _Green; //Nblinck( wordSet[nCh], _Green, 500); // 
-//				if (nCh == adc_current)
-//					{
-//						led_rgb[nCh] = _GreenON;
-//					}
-//					else
-//					{
-//						led_rgb[nCh] = _Green;
-//					}
+
 				}
-//				out = 1;	 
+	 
 			}
 //******************************************************************** 3       
        else if (wordSet[nCh+40] == 3)
@@ -313,9 +314,18 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
 //				out = 0;
       }
 			//********************************************************************  6      
-				else if (wordSet[nCh+40] == 6)
+				else if ((wordSet[nCh+40] == 6)&
+								(wordSet[nCh+40] != 61))
 				{	
+					led_rgb[nCh]= _Yellow;
+					
 					out = 0;
+					
+					if (Alarm[110 + nCh]& Alarm[120 + nCh] & Alarm [130 + nCh])
+						{
+							wordSet[nCh+40] = 2;
+						}
+					
 					
 					tempPush = timePush (4000, nCh);    
 
@@ -335,23 +345,10 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
 					Alarm[nCh +110] = 1;
 					Alarm[nCh +120] = 1;
 					Alarm[nCh +130] = 1;
+					
           wordSet[nCh+40] = 0; // select 1		
-					}
-						
-					
-					
-					if (Alarm[110 + nCh]& Alarm[120 + nCh] & Alarm [130 + nCh])
-						{
-							wordSet[nCh+40] = 2;
-						}
-
-					else
-						{
-						wordSet[nCh+40] = 0; 
-						led_rgb[nCh]= _Blue;
-						}
-				
-					
+					} 
+											
 				}
 	//********************************************************************   7     
 			else if (wordSet[nCh+40] == 7)
@@ -359,7 +356,7 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
 					
 					out = 0;
 
-					if ((Alarm[nCh+20] | Alarm[nCh+30] | Alarm[nCh+40]) ==0)
+					if (Alarm[nCh+20] & Alarm[nCh+30] & Alarm[nCh+40])
 					{
 						wordSet[nCh+40] = 2;
 					}
@@ -368,6 +365,9 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
 
         switch (tempPush)
         {
+					led_rgb[nCh] =  _Red;
+					out = 0;
+					
           case 0:
           wordSet[nCh+40] = 7; // monitor off
           break;          
@@ -385,13 +385,74 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
           wordSet[nCh+40] = 0; // select 1					
           break;
         }		
-				led_rgb[nCh] =  _Red;       
-//        out =1;   																								  
+				      																								  
 			}
+				
+//********************************************************************   8    
+			else if (wordSet[nCh+40] == 8)
+				{
+					led_rgb[nCh] = Alarm_blinck (_Red,_Yellow, 500, nCh);			//_Yellow	напряжение в кабеле	более Уставки 
+					
+					out = 0;
 
+					if (Alarm[nCh+140] & Alarm[nCh+150])
+					{
+						wordSet[nCh+40] = 2;
+					}
+					
+        tempPush = timePush (4000, nCh);    
+
+        switch (tempPush)
+        {
+          case 0:
+          wordSet[nCh+40] = 8; // monitor off
+          break;          
+          case 1:
+						wordSet[nCh+40] = 81; // redi monitor  				
+          break;
+          case 2:
+					Alarm[nCh+20] = 1;
+					Alarm[nCh+30] = 1;
+					Alarm[nCh+40] = 1;
+					Alarm[nCh+50] = 1;
+					Alarm[nCh +110] = 1;
+					Alarm[nCh +120] = 1;
+					Alarm[nCh +130] = 1;
+					
+          wordSet[nCh+40] = 0; // select 1					
+          break;
+        }																										  
+			}
+	//********************************************************************   61 
+				/* прдупр. сопротивление изоляции 1 ниже нормы  (110)*/
+			
+			else if (wordSet[nCh+40] == 61)
+			{
+//				if (Alarm[nCh+20] == 1)
+//				{wordSet[nCh+40] = 62;}
+				led_rgb[nCh] = Alarm_blinck (_Yellow,_Black, 500, nCh);
+				
+				tempPush = timePush (4000, nCh);    
+
+        switch (tempPush)
+        {
+          case 0:
+          wordSet[nCh+40] = 61; // monitor off
+          break;          
+          case 1:
+						wordSet[nCh+40] = 62; // redi monitor  				
+          break;
+          case 2:					
+          wordSet[nCh+40] = 6; // select 1					
+          break; 
+					
+					out = 0x01;
+				}
+
+		}
 			
 			return out;
 			
 		} 
-
-	// test git   2 
+	
+	

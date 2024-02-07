@@ -2,25 +2,7 @@
 
 		float testUz[10];
 		uint32_t testS[10];
-//extern UART_HandleTypeDef huart1;
-//extern DMA_HandleTypeDef hdma_usart1_rx;
-//extern DMA_HandleTypeDef hdma_usart1_tx;
-//extern SPI_HandleTypeDef hspi1;
 
-//extern uint32_t  led_rgb[10];
-//extern float RZ[3];
-//extern GPIO switch_gpio[10]; 
-//extern _Bool arrBool[0x400];  
-//extern	uint16_t arrWord[0x400];
-//extern uint32_t constBipol;
-//extern float Bipol[10];
-//extern float sR;
-
-//extern uint8_t switch_state[10]; 
-//extern int adc_current_chan; 
-//extern uint8_t test_Status;
-//extern uint32_t callibrateU[10];
-//extern float callFlo[10];
 
 void ADC_measureVolt(uint8_t nCh, uint16_t* aWord, _Bool* aBool) 
 	{
@@ -155,6 +137,9 @@ void ADC_measureVolt(uint8_t nCh, uint16_t* aWord, _Bool* aBool)
 		else if (uz <(limit - delta))
 		{alarm2 = 0;}	
 
-		aBool[nCh +100] = alarm1 | alarm2;
-		aBool[nCh+110] = !aBool[nCh+100];
+		aBool[100+nCh] = alarm1 | alarm2;
+		aBool[100+nCh] = !aBool[100+nCh];
+		
+		aBool[140 + nCh] = ! alarm1; //Напряжение 1 в кабеле не превышает УСТАВКУ 
+		aBool[150 + nCh] = ! alarm2; //Напряжение 2 в кабеле не превышает УСТАВКУ 
 }
