@@ -18,10 +18,12 @@ extern int adc_current_chan;
 extern uint8_t test_Status;
 extern uint32_t callibrateU[10];
 extern float callFlo[10];
+extern float callR[10];
 float k; // временный коэффициент для расчета напряжения 
 float riz_m1[10];
 float riz_m2[10];
 float setRz[10];
+setPointLoop[10];
 
 
 
@@ -33,7 +35,7 @@ void ADC_measure_minus(uint8_t nCh, uint16_t* aWord, _Bool* aBool)
 	float v100; // Временно напряжение 100 вольт
 	float R = 20000.0;
 	int ok = 1;
-//	float delta = 0.2;
+//	float delta[nCh] = 0.2;
 
 
 
@@ -181,7 +183,7 @@ void ADC_measure_minus(uint8_t nCh, uint16_t* aWord, _Bool* aBool)
 	float v100; // Временно напряжение 100 вольт
 	float R = 20000.0;
 	int ok = 1;
-	float delta = 0.2;
+	float delta[10]; // = [0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2];
 	float kbipol=0;
 		
 		// Сопротивление Шлейфа
@@ -228,27 +230,42 @@ if (R>65535){R=65535;}
 //			}
 
 		aWord[70 + nCh] = R; // измеренное значение
-		callFlo[nCh] = R;
+			
 		//диапазон 	
-			delta = ((uint8_t)arrWord[nCh])*0.01; //230717
+			setPointLoop[nCh] = arrWord[nCh]>>8;
+			delta[nCh] = ((uint8_t)setPointLoop[nCh])*0.01; //230717
 		// Сопротивление шлейфа
 			setRz[nCh] = arrWord[nCh+30];
 
-			if (R < (setRz[nCh]-setRz[nCh]*delta)) // | (R > (arrWord[nCh +30]+arrWord[nCh +30]*delta)))
-			{ 
-				aBool[nCh +40] = 0;	// выход за пределы для канала вниз
-			}
+			if (R < (setRz[nCh]-setRz[nCh]*delta[nCh])) // | (R > (arrWord[nCh +30]+arrWord[nCh +30]*delta)))
+				{ 
+					aBool[nCh +40] = 0;	// выход за пределы для канала вниз
+				}
 			else
-			{
-				aBool[nCh +40] = 1;
-			}
+				{
+					aBool[nCh +40] = 1;
+				}
+				
+		
+				
+			if (R > (setRz[nCh]+setRz[nCh]*delta[nCh])) // | (R > (arrWord[nCh +30]+arrWord[nCh +30]*delta)))
+				{ 
+					aBool[nCh +50] = 0;	// выход за пределы для канала вверх
+				}
+			else
+				{
+					aBool[nCh +50] = 1;
+				}
+			
+			
 			
 																		/***** Предупреждение *****/
-		delta = (uint8_t)(arrWord[250 + nCh])*0.01;
+		// вниз
+		delta[nCh] = (uint8_t)(arrWord[250 + nCh])*0.01;
 		
-		setRz[nCh] = arrWord[nCh+30];
-	
-		if (R < (setRz[nCh]-setRz[nCh]*delta))
+		setRz[nCh] = arrWord[30+nCh];
+		
+		if (R < (setRz[nCh]-setRz[nCh]*delta[nCh]))
 		{ 
 			aBool[nCh +130] = 0;	// выход за пределы для канала сопротивления шлейфа предупредительно
 		}
@@ -256,6 +273,19 @@ if (R>65535){R=65535;}
 		{
 			aBool[nCh +130] = 1;
 		}
+		
+		// вверх шлейфа
+
+		
+		if (R > (setRz[nCh]+setRz[nCh]*delta[nCh]))
+		{ 
+			aBool[nCh +160] = 0;	// выход за пределы для канала сопротивления шлейфа предупредительно
+		}
+		else
+		{
+			aBool[nCh +160] = 1;
+		}
+
 
 //////////	//led_rgb[adc_current_chan] = 0x1f;
 		//*******************************************
@@ -363,11 +393,14 @@ if (R>65535){R=65535;}
 		
 //		kbipol = arrWord[170+nCh]
 																/***** Авария *****/		
-		delta = (uint8_t)(arrWord[nCh]>>8)*0.01; //230717
+		delta[nCh] = (uint8_t)(arrWord[nCh]>>8)*0.01; //230717
 		
 		setRz[nCh] = arrWord[nCh+10];
+		
+		callFlo[nCh]=(setRz[nCh]-setRz[nCh]*delta[nCh]);
+		callR[nCh]= Rcr;
 	
-		if (Rcr < (setRz[nCh]-setRz[nCh]*delta))// | (R > (arrWord[nCh +10]+arrWord[nCh +10]*delta)))
+		if (Rcr < (setRz[nCh]-setRz[nCh]*delta[nCh]))// | (R > (arrWord[nCh +10]+arrWord[nCh +10]*delta[nCh])))
 		{ 
 			aBool[nCh +20] = 0;	// выход за пределы для канала сопротивления изоляции 1
 		}
@@ -377,10 +410,10 @@ if (R>65535){R=65535;}
 		}
 
 																/***** Предупреждение *****/
-		delta = (uint8_t)(arrWord[250 + nCh]>>8)*0.01;
+		delta[nCh] = (uint8_t)(arrWord[250 + nCh]>>8)*0.01;
 		setRz[nCh] = arrWord[nCh+10];
 	
-		if (Rcr < (setRz[nCh]-setRz[nCh]*delta))
+		if (Rcr < (setRz[nCh]-setRz[nCh]*delta[nCh]))
 		{ 
 			aBool[nCh +110] = 0;	// выход за пределы для канала сопротивления изоляции 1 предупредительно
 		}
@@ -429,11 +462,11 @@ if (R>65535){R=65535;}
 		// измеренное значение Сопротивление изолияции 2
 	
 	
-		delta = (uint8_t)(arrWord[nCh]>>8)*0.01;// 230717
+		delta[nCh] = (uint8_t)(arrWord[nCh]>>8)*0.01;// 230717
 		
 		setRz[nCh] = arrWord[nCh+20];
 		
-		if (Rcr < (setRz[nCh]-setRz[nCh]*delta))//| (R > (arrWord[nCh +20]+arrWord[nCh +20]*delta)))
+		if (Rcr < (setRz[nCh]-setRz[nCh]*delta[nCh]))//| (R > (arrWord[nCh +20]+arrWord[nCh +20]*delta[nCh])))
 	{ 
 		aBool[nCh +30] = 0;	// выход за пределы для канала сопротивления изоляции 1 ps фиксируется только вниз
 	}
@@ -444,11 +477,11 @@ if (R>65535){R=65535;}
 
 																/***** Предупреждение *****/
 	
-		delta = (uint8_t)(arrWord[250 + nCh]>>8)*0.01;
+		delta[nCh] = (uint8_t)(arrWord[250 + nCh]>>8)*0.01;
 		
 		setRz[nCh] = arrWord[nCh+20];
 	
-		if (Rcr < (setRz[nCh]-setRz[nCh]*delta))
+		if (Rcr < (setRz[nCh]-setRz[nCh]*delta[nCh]))
 		{ 
 			aBool[nCh +120] = 0;	// выход за пределы для канала сопротивления изоляции 1 предупредительно
 		}

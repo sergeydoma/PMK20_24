@@ -358,6 +358,9 @@ void ADC_measure_plus(uint8_t nCh, uint16_t* aWord, _Bool* aBool);
 void ADC_measure_minus(uint8_t nCh, uint16_t* aWord, _Bool* aBool);
 uint16_t formula(float rdm, float rdp);
 
+uint16_t getMode(uint8_t nCh, uint16_t* mode);
+void setMode(uint8_t nCh, uint16_t* arrWord, uint16_t* mode);
+
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus
