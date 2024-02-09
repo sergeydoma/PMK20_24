@@ -319,35 +319,39 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
 									wordSet[40+nCh] = 7; // Авария
 
 										led_rgb[nCh] =  _Red; 
-						}	
-					
-					if (Alarm[110 + nCh]& Alarm[120 + nCh] & Alarm [130 + nCh])
-						{
-							wordSet[40+nCh] = 2;
 						}
-					
-					
-					tempPush = timePush (4000, nCh);    
+						else
+						{
+											
+							if (Alarm[110 + nCh]& Alarm[120 + nCh] & Alarm [130 + nCh])
+									{
+										wordSet[40+nCh] = 2;
+									}
+							
+							
+							tempPush = timePush (4000, nCh);    
 
-					switch (tempPush)
-					{
-					case 0:
-          wordSet[40+nCh] = 6; // monitor off
-          break;          
-          case 1:
-          wordSet[40+nCh] = 61; // redi monitor          
-          break;
-          case 2:
-          Alarm[nCh+20] = 1;
-					Alarm[nCh+30] = 1;
-					Alarm[nCh+40] = 1;
-					Alarm[nCh+50] = 1;
-					Alarm[nCh +110] = 1;
-					Alarm[nCh +120] = 1;
-					Alarm[nCh +130] = 1;
-					
-          wordSet[40+nCh] = 0; // select 1		
-					} 
+							switch (tempPush)
+							{
+							case 0:
+							wordSet[40+nCh] = 6; // monitor off
+							break;          
+							case 1:
+							wordSet[40+nCh] = 61; // redi monitor          
+							break;
+							case 2:
+							Alarm[nCh+20] = 1;
+							Alarm[nCh+30] = 1;
+							Alarm[nCh+40] = 1;
+							Alarm[nCh+50] = 1;
+							Alarm[nCh +110] = 1;
+							Alarm[nCh +120] = 1;
+							Alarm[nCh +130] = 1;
+							
+							wordSet[40+nCh] = 0; // select 1		
+							} 
+							
+					}	
 											
 			break;
 				
@@ -357,7 +361,7 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
 			
 			out = 0;
 
-					if (Alarm[nCh+20] & Alarm[nCh+30] & Alarm[nCh+40])
+					if (Alarm[20+nCh] & Alarm[30+nCh] & Alarm[40+nCh] & Alarm[50+nCh])
 					{
 						wordSet[40+nCh] = 2;
 					}
@@ -452,7 +456,12 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
 					wordSet[40+nCh] = 6; // select 1					
 					break;
 				}
-				if (Alarm[nCh+110] == 1)
+				
+				if (Alarm[110 + nCh]& Alarm[120 + nCh] & Alarm [130 + nCh] & Alarm[nCh+160])
+					{
+						wordSet[40+nCh] = 6;
+					}
+				else if (Alarm[nCh+110] == 1)
 				{
 					wordSet[40+nCh] = 62;
 				}
@@ -467,27 +476,32 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
 			
 			out = 	0x02;	
 		
+		
 				led_rgb[nCh] = Alarm_blinck (_Yellow,_Black, 500, nCh);
 
 				tempPush = timePush (4000, nCh);    
 
 				switch (tempPush)
-				{
-					case 0:
-					wordSet[40+nCh] = 62; // monitor off
-					break;          
-					case 1:
-					wordSet[40+nCh] = 63; // redi monitor  				
-					break;
-					case 2:					
-					wordSet[40+nCh] = 6; // select 1					
-					break;
-				}
-				
-				if (Alarm[nCh+120] == 1)
-				{
-					wordSet[40+nCh] = 63;
-				}
+					{
+						case 0:
+						wordSet[40+nCh] = 62; // monitor off
+						break;          
+						case 1:
+						wordSet[40+nCh] = 63; // redi monitor  				
+						break;
+						case 2:					
+						wordSet[40+nCh] = 6; // select 1					
+						break;
+					}			
+								
+				if (Alarm[110 + nCh]& Alarm[120 + nCh] & Alarm [130 + nCh] & Alarm[nCh+160])
+					{
+						wordSet[40+nCh] = 6;
+					}
+				else if (Alarm[nCh+120] == 1)
+					{
+						wordSet[40+nCh] = 63;
+					}
 		break;	
 					//********************************************************************   63
 				/* прдупр. сопротивление шлейфа ниже нормы  (130)*/
@@ -500,21 +514,26 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
 				tempPush = timePush (4000, nCh);    
 
 				switch (tempPush)
-				{
-					case 0:
-					wordSet[40+nCh] = 63; // monitor off
-					break;          
-					case 1:
-					wordSet[40+nCh] = 64; // redi monitor  				
-					break;
-					case 2:					
-					wordSet[40+nCh] = 6; // select 1					
-					break;
-				}
-				if (Alarm[nCh+130] == 1)
-				{
-					wordSet[40+nCh] = 64;
-				}				
+					{
+						case 0:
+						wordSet[40+nCh] = 63; // monitor off
+						break;          
+						case 1:
+						wordSet[40+nCh] = 64; // redi monitor  				
+						break;
+						case 2:					
+						wordSet[40+nCh] = 6; // select 1					
+						break;
+					}
+				
+				if (Alarm[110 + nCh]& Alarm[120 + nCh] & Alarm [130 + nCh] & Alarm[nCh+160])
+					{
+						wordSet[40+nCh] = 6;
+					}
+				else if (Alarm[nCh+130] == 1)
+					{
+						wordSet[40+nCh] = 64;
+					}				
 		break;
 				
 //********************************************************************   64
@@ -528,38 +547,303 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
 				tempPush = timePush (4000, nCh);    
 
 				switch (tempPush)
+					{
+						case 0:
+						wordSet[40+nCh] = 64; // monitor off
+						break;          
+						case 1:
+						wordSet[40+nCh] = 61; // redi monitor  				
+						break;
+						case 2:					
+						wordSet[40+nCh] = 6; // select 1					
+						break;
+					}	
+				
+				if (Alarm[110 + nCh]& Alarm[120 + nCh] & Alarm [130 + nCh] & Alarm[nCh+160])
+					{
+						wordSet[40+nCh] = 6;
+					}
+					
+				else if (Alarm[nCh+160] == 1)
+					{
+						wordSet[40+nCh] = 61;
+					}
+		break;
+
+//********************************************************************   71
+				/* прдупр. сопротивление шлейфа выше аварийной нормы  (20)*/
+		case 71:
+			
+			out = 	0x11;	
+		
+				led_rgb[nCh] = Alarm_blinck (_Red,_Black, 500, nCh);
+
+				tempPush = timePush (4000, nCh);    
+
+				switch (tempPush)
 				{
 					case 0:
-					wordSet[40+nCh] = 64; // monitor off
+					wordSet[40+nCh] = 71; // monitor off
 					break;          
 					case 1:
-					wordSet[40+nCh] = 61; // redi monitor  				
+					wordSet[40+nCh] = 72; // redi monitor  				
 					break;
 					case 2:					
-					wordSet[40+nCh] = 6; // select 1					
+					wordSet[40+nCh] = 7; // select 1					
 					break;
 				}	
-			if (Alarm[nCh+160] == 1)
-		{
-			wordSet[40+nCh] = 6;
-		}
-		break;
 				
+				if (Alarm[20+nCh] & Alarm[30+nCh] & Alarm[40+nCh] & Alarm[50+nCh])
+					{
+						wordSet[40+nCh] = 7;
+					}
+					
+				else if (Alarm[20+nCh])
+					{
+						wordSet[40+nCh] = 72;
+					}
+
+		break;	
+//********************************************************************   72
+				/* прдупр. сопротивление шлейфа выше аварийной нормы  (30)*/
+		case 72:
+			
+			out = 	0x12;	
+		
+				led_rgb[nCh] = Alarm_blinck (_Red,_Black, 500, nCh);
+
+				tempPush = timePush (4000, nCh);    
+
+				switch (tempPush)
+				{
+					case 0:
+					wordSet[40+nCh] = 72; // monitor off
+					break;          
+					case 1:
+					wordSet[40+nCh] = 73; // redi monitor  				
+					break;
+					case 2:					
+					wordSet[40+nCh] = 7; // select 1					
+					break;
+				}	
+				
+				if (Alarm[20+nCh] & Alarm[30+nCh] & Alarm[40+nCh] & Alarm[50+nCh])
+					{
+						wordSet[40+nCh] = 7;
+					}
+					
+				else if (Alarm[30+nCh])
+					{
+						wordSet[40+nCh] = 73;
+					}
+			break;
+//********************************************************************   73
+				/* прдупр. сопротивление шлейфа выше аварийной нормы  (40)*/
+		case 73:
+			
+			out = 	0x13;	
+		
+				led_rgb[nCh] = Alarm_blinck (_Red,_Black, 500, nCh);
+
+				tempPush = timePush (4000, nCh);    
+
+				switch (tempPush)
+				{
+					case 0:
+					wordSet[40+nCh] = 73; // monitor off
+					break;          
+					case 1:
+					wordSet[40+nCh] = 74; // redi monitor  				
+					break;
+					case 2:					
+					wordSet[40+nCh] = 7; // select 1					
+					break;
+				}	
+				
+				if (Alarm[20+nCh] & Alarm[30+nCh] & Alarm[40+nCh] & Alarm[50+nCh])
+					{
+						wordSet[40+nCh] = 7;
+					}
+					
+				else if (Alarm[40+nCh])
+					{
+						wordSet[40+nCh] = 74;
+					}
+		break;		
+//********************************************************************   74
+				/* прдупр. сопротивление шлейфа выше аварийной нормы  (40)*/
+		case 74:
+			
+			out = 	0x14;	
+		
+				led_rgb[nCh] = Alarm_blinck (_Red,_Black, 500, nCh);
+
+				tempPush = timePush (4000, nCh);    
+
+				switch (tempPush)
+				{
+					case 0:
+					wordSet[40+nCh] = 74; // monitor off
+					break;          
+					case 1:
+					wordSet[40+nCh] = 75; // redi monitor  				
+					break;
+					case 2:					
+					wordSet[40+nCh] = 7; // select 1					
+					break;
+				}	
+				
+				if (Alarm[20+nCh] & Alarm[30+nCh] & Alarm[40+nCh] & Alarm[50+nCh])
+					{
+						wordSet[40+nCh] = 7;
+					}
+					
+				else if (Alarm[50+nCh])
+					{
+						wordSet[40+nCh] = 75;
+					}
+			break;		
+					//********************************************************************   75
+				/*  прдупр. сопротивление изоляции 1 ниже нормы  (110)*/
+		
+			case 75:
+			
+			out = 	0x01;	
+		
+				led_rgb[nCh] = Alarm_blinck (_Yellow,_Black, 500, nCh);
+
+				tempPush = timePush (4000, nCh);    
+
+				switch (tempPush)
+				{
+					case 0:
+					wordSet[40+nCh] = 75; // monitor off
+					break;          
+					case 1:
+					wordSet[40+nCh] = 76; // redi monitor  				
+					break;
+					case 2:					
+					wordSet[40+nCh] = 7; // select 1					
+					break;
+				}	
+				
+				if (Alarm[110 + nCh]& Alarm[120 + nCh] & Alarm [130 + nCh] & Alarm[nCh+160])
+					{
+						wordSet[40+nCh] = 71;
+					}
+				else if (Alarm[nCh+110] == 1)
+				{
+					wordSet[40+nCh] = 76;
+				}
+				break;
+				
+									//********************************************************************   76
+				/*  прдупр. сопротивление изоляции 2 ниже нормы  (120)*/
+		
+			case 76:
+			
+			out = 	0x02;	
+		
+				led_rgb[nCh] = Alarm_blinck (_Yellow,_Black, 500, nCh);
+
+				tempPush = timePush (4000, nCh);    
+
+				switch (tempPush)
+				{
+					case 0:
+					wordSet[40+nCh] = 76; // monitor off
+					break;          
+					case 1:
+					wordSet[40+nCh] = 77; // redi monitor  				
+					break;
+					case 2:					
+					wordSet[40+nCh] = 7; // select 1					
+					break;
+				}	
+				
+				if (Alarm[110 + nCh]& Alarm[120 + nCh] & Alarm [130 + nCh] & Alarm[nCh+160])
+					{
+						wordSet[40+nCh] = 71;
+					}
+				else if (Alarm[nCh+120] == 1)
+				{
+					wordSet[40+nCh] = 77;
+				}
+				break;
+				
+//********************************************************************   77
+				/*  прдупр. сопротивление изоляции 2 ниже нормы  (120)*/
+		
+			case 77:
+			
+			out = 	0x03;	
+		
+				led_rgb[nCh] = Alarm_blinck (_Yellow,_Black, 500, nCh);
+
+				tempPush = timePush (4000, nCh);    
+
+				switch (tempPush)
+				{
+					case 0:
+					wordSet[40+nCh] = 77; // monitor off
+					break;          
+					case 1:
+					wordSet[40+nCh] = 78; // redi monitor  				
+					break;
+					case 2:					
+					wordSet[40+nCh] = 7; // select 1					
+					break;
+				}	
+				
+				if (Alarm[110 + nCh]& Alarm[120 + nCh] & Alarm [130 + nCh] & Alarm[nCh+160])
+					{
+						wordSet[40+nCh] = 71;
+					}
+				else if (Alarm[nCh+130] == 1)
+				{
+					wordSet[40+nCh] = 78;
+				}
+				break;
+				
+//********************************************************************   78
+				/*  прдупр. сопротивление изоляции 2 ниже нормы  (160)*/
+		
+			case 78:
+			
+			out = 	0x04;	
+		
+				led_rgb[nCh] = Alarm_blinck (_Yellow,_Black, 500, nCh);
+
+				tempPush = timePush (4000, nCh);    
+
+				switch (tempPush)
+				{
+					case 0:
+					wordSet[40+nCh] = 78; // monitor off
+					break;          
+					case 1:
+					wordSet[40+nCh] = 71; // redi monitor  				
+					break;
+					case 2:					
+					wordSet[40+nCh] = 7; // select 1					
+					break;
+				}	
+				
+				if (Alarm[110 + nCh]& Alarm[120 + nCh] & Alarm [130 + nCh] & Alarm[nCh+160])
+					{
+						wordSet[40+nCh] = 71;
+					}
+				else if (Alarm[nCh+130] == 1)
+				{
+					wordSet[40+nCh] = 71;
+				}	
+			break;
 				
 		}
 			return out;
 			
 	} 
 	
-//	uint16_t getMode(uint8_t nCh, uint16_t* mode)
-//	{
-//		return arrWord[40+nCh];
-//	}
-//	
-//	void setMode(uint8_t nCh, uint16_t* arrWord, uint16_t* mode)
-//	{
-//		 arrWord[40+nCh] = mode[nCh];
-//	}
-	
+
 	
 	
