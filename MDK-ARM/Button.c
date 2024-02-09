@@ -188,11 +188,11 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
 	//					Alarm[nCh+50] = 1; // ручное квитирование обрыва кабеля
 						break;
 					}
-					if ((Alarm[110+nCh] ==0))
+					if ((Alarm[140+nCh] & Alarm[150+nCh]) ==0)
 						{													 
 							wordSet[40+nCh]= 8; // АВАРИЯ ПО НАПРЯЖЕНИЮ					
 						}
-					else if (	(Alarm[nCh+20] & Alarm[nCh+30] & Alarm[nCh+40] & Alarm[50+nCh])==0)																	//(Alarm[nCh+60] == 0)
+					else if (	(Alarm[nCh+20] & Alarm[nCh+30] & Alarm[nCh+40] & Alarm[50+nCh])==0)		
 						{      
 									wordSet[40+nCh] = 7; // Авария
 
@@ -313,44 +313,51 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
 					led_rgb[nCh]= _Yellow;
 					
 					out = 0;
+					if ((Alarm[140+nCh] & Alarm[150+nCh])==0)
+					{
+						wordSet[40+nCh] = 8;
+					}
 					
-					if (	(Alarm[nCh+20] & Alarm[nCh+30] & Alarm[nCh+40] & Alarm[50+nCh])==0)																	//(Alarm[nCh+60] == 0)
-						{      
-									wordSet[40+nCh] = 7; // Авария
+					else
+					{
+					
+						if (	(Alarm[nCh+20] & Alarm[nCh+30] & Alarm[nCh+40] & Alarm[50+nCh])==0)																	//(Alarm[nCh+60] == 0)
+							{      
+										wordSet[40+nCh] = 7; // Авария
 
-										led_rgb[nCh] =  _Red; 
-						}
-						else
-						{
-											
-							if (Alarm[110 + nCh]& Alarm[120 + nCh] & Alarm [130 + nCh])
-									{
-										wordSet[40+nCh] = 2;
-									}
-							
-							
-							tempPush = timePush (4000, nCh);    
-
-							switch (tempPush)
+											led_rgb[nCh] =  _Red; 
+							}
+							else
 							{
-							case 0:
-							wordSet[40+nCh] = 6; // monitor off
-							break;          
-							case 1:
-							wordSet[40+nCh] = 61; // redi monitor          
-							break;
-							case 2:
-							Alarm[nCh+20] = 1;
-							Alarm[nCh+30] = 1;
-							Alarm[nCh+40] = 1;
-							Alarm[nCh+50] = 1;
-							Alarm[nCh +110] = 1;
-							Alarm[nCh +120] = 1;
-							Alarm[nCh +130] = 1;
-							
-							wordSet[40+nCh] = 0; // select 1		
-							} 
-							
+												
+								if (Alarm[110 + nCh]& Alarm[120 + nCh] & Alarm [130 + nCh])
+										{
+											wordSet[40+nCh] = 2;
+										}
+								
+								
+								tempPush = timePush (4000, nCh);    
+
+								switch (tempPush)
+								{
+								case 0:
+								wordSet[40+nCh] = 6; // monitor off
+								break;          
+								case 1:
+								wordSet[40+nCh] = 61; // redi monitor          
+								break;
+								case 2:
+								Alarm[nCh+20] = 1;
+								Alarm[nCh+30] = 1;
+								Alarm[nCh+40] = 1;
+								Alarm[nCh+50] = 1;
+								Alarm[nCh +110] = 1;
+								Alarm[nCh +120] = 1;
+								Alarm[nCh +130] = 1;
+								
+								wordSet[40+nCh] = 0; // select 1		
+								} 
+							}
 					}	
 											
 			break;
@@ -360,36 +367,47 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
 			led_rgb[nCh]= _Red;		
 			
 			out = 0;
-
-					if (Alarm[20+nCh] & Alarm[30+nCh] & Alarm[40+nCh] & Alarm[50+nCh])
+			
+					if ((Alarm[140+nCh] & Alarm[150+nCh])==0)
 					{
-						wordSet[40+nCh] = 2;
+						wordSet[40+nCh] = 8;
 					}
-					
-        tempPush = timePush (4000, nCh);    
-
-					switch (tempPush)
+					else
 					{
-						led_rgb[nCh] =  _Red;
-						out = 0;
+
+						if (Alarm[20+nCh] & Alarm[30+nCh] & Alarm[40+nCh] & Alarm[50+nCh])
+						{
+							wordSet[40+nCh] = 2;
+						}
+						else
+						{
 						
-						case 0:
-						wordSet[40+nCh] = 7; // monitor off
-						break;          
-						case 1:
-							wordSet[40+nCh] = 71; // redi monitor  				
-						break;
-						case 2:
-						Alarm[nCh+20] = 1;
-						Alarm[nCh+30] = 1;
-						Alarm[nCh+40] = 1;
-						Alarm[nCh+50] = 1;
-						Alarm[nCh +110] = 1;
-						Alarm[nCh +120] = 1;
-						Alarm[nCh +130] = 1;
-						wordSet[40+nCh] = 0; // select 1					
-						break;
-					}						      																								  
+						tempPush = timePush (4000, nCh);    
+
+							switch (tempPush)
+							{
+								led_rgb[nCh] =  _Red;
+								out = 0;
+								
+								case 0:
+								wordSet[40+nCh] = 7; // monitor off
+								break;          
+								case 1:
+									wordSet[40+nCh] = 71; // redi monitor  				
+								break;
+								case 2:
+								Alarm[nCh+20] = 1;
+								Alarm[nCh+30] = 1;
+								Alarm[nCh+40] = 1;
+								Alarm[nCh+50] = 1;
+								Alarm[nCh +110] = 1;
+								Alarm[nCh +120] = 1;
+								Alarm[nCh +130] = 1;
+								wordSet[40+nCh] = 0; // select 1					
+								break;
+							}
+						}	
+					}
 			break;
 					
 			case 8:				
@@ -402,31 +420,35 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
 					{
 						wordSet[40+nCh] = 2;
 					}
+					else
+					{
 					
-        tempPush = timePush (4000, nCh);    
+						tempPush = timePush (4000, nCh);    
 
-        switch (tempPush)
-        {
-          case 0:
-          wordSet[40+nCh] = 8; // monitor off
-          break;          
-          case 1:
-						wordSet[40+nCh] = 81; // redi monitor  				
-          break;
-          case 2:
-					Alarm[nCh+20] = 1;
-					Alarm[nCh+30] = 1;
-					Alarm[nCh+40] = 1;
-					Alarm[nCh+50] = 1;
-					Alarm[nCh +110] = 1;
-					Alarm[nCh +120] = 1;
-					Alarm[nCh +130] = 1;
-					
-          wordSet[40+nCh] = 0; // select 1					
-          break;
-        }	
+						switch (tempPush)
+						{
+							case 0:
+							wordSet[40+nCh] = 8; // monitor off
+							break;          
+							case 1:
+								wordSet[40+nCh] = 81; // redi monitor  				
+							break;
+							case 2:
+							Alarm[nCh+20] = 1;
+							Alarm[nCh+30] = 1;
+							Alarm[nCh+40] = 1;
+							Alarm[nCh+50] = 1;
+							Alarm[nCh +110] = 1;
+							Alarm[nCh +120] = 1;
+							Alarm[nCh +130] = 1;
+							
+							wordSet[40+nCh] = 0; // select 1					
+							break;
+						}
+					}
+				break;
 				default:	
-					Alarm[40+nCh] = 0;
+					wordSet[40+nCh] = 0;
 			break;
 				
 	//********************************************************************   61 
@@ -838,6 +860,74 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
 					wordSet[40+nCh] = 71;
 				}	
 			break;
+				
+	//********************************************************************   81
+				/*  прдупр. сопротивление изоляции 2 ниже нормы  (140)*/
+		
+			case 81:
+			
+			out = 	0x15;	
+		
+				led_rgb[nCh] = Alarm_blinck (_Red,_Black, 500, nCh);
+
+				tempPush = timePush (4000, nCh);    
+
+				switch (tempPush)
+				{
+					case 0:
+					wordSet[40+nCh] = 81; // monitor off
+					break;          
+					case 1:
+					wordSet[40+nCh] = 82; // redi monitor  				
+					break;
+					case 2:					
+					wordSet[40+nCh] = 8; // select 1					
+					break;
+				}	
+				
+				if (Alarm[140 + nCh]& Alarm[150 + nCh])
+					{
+						wordSet[40+nCh] = 8;
+					}
+				else if (Alarm[nCh+140] == 1)
+				{
+					wordSet[40+nCh] = 82;
+				}	
+			break;
+				
+			//********************************************************************   82
+				/*  прдупр. сопротивление изоляции 2 ниже нормы  (160)*/
+		
+			case 82:
+			
+			out = 	0x16;	
+		
+				led_rgb[nCh] = Alarm_blinck (_Red,_Black, 500, nCh);
+
+				tempPush = timePush (4000, nCh);    
+
+				switch (tempPush)
+				{
+					case 0:
+					wordSet[40+nCh] = 82; // monitor off
+					break;          
+					case 1:
+					wordSet[40+nCh] = 81; // redi monitor  				
+					break;
+					case 2:					
+					wordSet[40+nCh] = 8; // select 1					
+					break;
+				}	
+				
+				if (Alarm[140 + nCh]& Alarm[150 + nCh])
+					{
+						wordSet[40+nCh] = 8;
+					}
+				else if (Alarm[nCh+150] == 1)
+				{
+					wordSet[40+nCh] = 81;
+				}	
+			break;	
 				
 		}
 			return out;

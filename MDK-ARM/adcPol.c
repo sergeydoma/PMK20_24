@@ -397,8 +397,7 @@ if (R>65535){R=65535;}
 		
 		setRz[nCh] = arrWord[nCh+10];
 		
-		callFlo[nCh]=(setRz[nCh]-setRz[nCh]*delta[nCh]);
-		callR[nCh]= Rcr;
+		
 	
 		if (Rcr < (setRz[nCh]-setRz[nCh]*delta[nCh]))// | (R > (arrWord[nCh +10]+arrWord[nCh +10]*delta[nCh])))
 		{ 
@@ -465,6 +464,9 @@ if (R>65535){R=65535;}
 		delta[nCh] = (uint8_t)(arrWord[nCh]>>8)*0.01;// 230717
 		
 		setRz[nCh] = arrWord[nCh+20];
+	
+		callFlo[nCh]=(setRz[nCh]-setRz[nCh]*delta[nCh]);
+		callR[nCh]= Rcr;
 		
 		if (Rcr < (setRz[nCh]-setRz[nCh]*delta[nCh]))//| (R > (arrWord[nCh +20]+arrWord[nCh +20]*delta[nCh])))
 	{ 
