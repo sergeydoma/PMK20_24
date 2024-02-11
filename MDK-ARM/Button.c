@@ -315,27 +315,24 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
 					out = 0;
 					if ((Alarm[140+nCh] & Alarm[150+nCh])==0)
 					{
-						wordSet[40+nCh] = 8;
+						wordSet[40+nCh] = 8;					
 					}
 					
-					else
-					{
 					
-						if (	(Alarm[nCh+20] & Alarm[nCh+30] & Alarm[nCh+40] & Alarm[50+nCh])==0)																	//(Alarm[nCh+60] == 0)
-							{      
-										wordSet[40+nCh] = 7; // Авария
+					else if (	(Alarm[nCh+20] & Alarm[nCh+30] & Alarm[nCh+40] & Alarm[50+nCh])==0)																	//(Alarm[nCh+60] == 0)
+						{      
+									wordSet[40+nCh] = 7; // Авария
 
-											led_rgb[nCh] =  _Red; 
-							}
-							else
-							{
+										led_rgb[nCh] =  _Red;
+						}
 												
-								if (Alarm[110 + nCh]& Alarm[120 + nCh] & Alarm [130 + nCh])
-										{
-											wordSet[40+nCh] = 2;
-										}
-								
-								
+					else if (Alarm[110 + nCh]& Alarm[120 + nCh] & Alarm [130 + nCh])
+							{
+								wordSet[40+nCh] = 2;
+								break;
+							}
+					else
+					{														
 								tempPush = timePush (4000, nCh);    
 
 								switch (tempPush)
@@ -357,8 +354,7 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
 								
 								wordSet[40+nCh] = 0; // select 1		
 								} 
-							}
-					}	
+						}
 											
 			break;
 				
@@ -368,18 +364,23 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
 			
 			out = 0;
 			
-					if ((Alarm[140+nCh] & Alarm[150+nCh])==0)
-					{
-						wordSet[40+nCh] = 8;
-					}
-					else
-					{
+					if (Alarm[20+nCh]&Alarm[30+nCh]&Alarm[40+nCh]&Alarm[50+nCh])
+						{
+							wordSet[40+nCh] = 2;										
+						}
+			
+					else if ((Alarm[140+nCh] & Alarm[150+nCh])==0)
+						{
+							wordSet[40+nCh] = 8;						
+						}
+//				else
+//					{
 
-						if (Alarm[20+nCh] & Alarm[30+nCh] & Alarm[40+nCh] & Alarm[50+nCh])
+					else if (Alarm[20+nCh] & Alarm[30+nCh] & Alarm[40+nCh] & Alarm[50+nCh])
 						{
 							wordSet[40+nCh] = 2;
 						}
-						else
+					else
 						{
 						
 						tempPush = timePush (4000, nCh);    
@@ -407,7 +408,7 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
 								break;
 							}
 						}	
-					}
+//					}
 			break;
 					
 			case 8:				
@@ -447,7 +448,7 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
 						}
 					}
 				break;
-				default:	
+			default:	
 					wordSet[40+nCh] = 0;
 			break;
 				

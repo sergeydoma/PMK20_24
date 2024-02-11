@@ -97,6 +97,7 @@ int16_t blink; // для выбора режима упрвления миган
 		uint8_t statusMb;
 		
 		float callR[10];
+		float tempSet[10];
 //	uint16_t currentTime; // переменная для выдержки 30 сек не нажата ни одна кнопка
 GPIO switch_gpio[10] = {
 	{ BT1_GPIO_Port, BT1_Pin },
@@ -523,7 +524,12 @@ int main(void)
 //							ADC_measure(adc_current, arrWord, arrBoolTemp, startSett);
 //							set_set[adc_current] = 1;
 						}
-						else if ((arrWord[40+adc_current]==2)|(arrWord[40+adc_current]==6) )
+						else if ((arrWord[40+adc_current]!=0)&
+										(arrWord[40+adc_current]!=1)&
+										(arrWord[40+adc_current]!=3)&
+										(arrWord[40+adc_current]!=4)&
+										(arrWord[40+adc_current]!=5))									
+									
 						{
 							
 							

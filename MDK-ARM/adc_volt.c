@@ -40,10 +40,6 @@ void ADC_measureVolt(uint8_t nCh, uint16_t* aWord, _Bool* aBool)
 			s = _constBipol - s;
 			polar = 0;
 		}	
-//////	s=s>>8;
-//////	
-//////	s=(s*100)/298;
-//////	if (s<=280){s=0;}
 		
 	uz = s;
 		
@@ -64,7 +60,6 @@ void ADC_measureVolt(uint8_t nCh, uint16_t* aWord, _Bool* aBool)
 	if (uz<= 2.8)
 	{uz = 0;}
 	testUz[nCh] = uz;
-//	callFlo[nCh]=s;
 	
 		aWord[190 +nCh] = uz*10;
 		
@@ -104,11 +99,6 @@ void ADC_measureVolt(uint8_t nCh, uint16_t* aWord, _Bool* aBool)
 		s = _constBipol - s;
 		polar =0;
 	}
-//	arrWord[nCh+200] = s;
-//	s=s>>8;	
-//	s=(s*100)/298;
-//	if (s<=280){s=0;}
-//	aWord[230 +nCh] = s/10;
 	testS[nCh] = s;
 	uz = s;
 	

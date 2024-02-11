@@ -19,12 +19,12 @@ extern uint8_t test_Status;
 extern uint32_t callibrateU[10];
 extern float callFlo[10];
 extern float callR[10];
+extern float tempSet[10];
 float k; // временный коэффициент для расчета напряжения 
 float riz_m1[10];
 float riz_m2[10];
-float setRz[10];
-setPointLoop[10];
-
+volatile float setRz[10];																	//float setRz[10];
+float setPointLoop[10];
 
 
 void ADC_measure_minus(uint8_t nCh, uint16_t* aWord, _Bool* aBool) 
@@ -463,8 +463,9 @@ if (R>65535){R=65535;}
 	
 		delta[nCh] = (uint8_t)(arrWord[nCh]>>8)*0.01;// 230717
 		
-		setRz[nCh] = arrWord[nCh+20];
-	
+		setRz[nCh] = arrWord[20+nCh];
+		
+		tempSet[nCh] = setRz[nCh];
 		callFlo[nCh]=(setRz[nCh]-setRz[nCh]*delta[nCh]);
 		callR[nCh]= Rcr;
 		
@@ -481,7 +482,7 @@ if (R>65535){R=65535;}
 	
 		delta[nCh] = (uint8_t)(arrWord[250 + nCh]>>8)*0.01;
 		
-		setRz[nCh] = arrWord[nCh+20];
+//		setRz[nCh] = arrWord[nCh+20];
 	
 		if (Rcr < (setRz[nCh]-setRz[nCh]*delta[nCh]))
 		{ 
