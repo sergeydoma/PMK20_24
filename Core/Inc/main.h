@@ -361,6 +361,8 @@ uint16_t formula(float rdm, float rdp);
 uint16_t getMode(uint8_t nCh, uint16_t* mode);
 void setMode(uint8_t nCh, uint16_t* arrWord, uint16_t* mode);
 
+uint8_t sort(uint8_t* status);
+
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

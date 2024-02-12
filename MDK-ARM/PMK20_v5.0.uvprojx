@@ -920,6 +920,11 @@
               <FileType>1</FileType>
               <FilePath>.\adcPol.c</FilePath>
             </File>
+            <File>
+              <FileName>alarm&amp;warning.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\alarm&amp;warning.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
