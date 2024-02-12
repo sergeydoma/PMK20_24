@@ -257,8 +257,6 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
   * @retval int
   */
 int main(void)
-
-
 {
   /* USER CODE BEGIN 1 */
 
@@ -361,8 +359,9 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-
+//	hi2c1.Init.OwnAddress1 = i2cAddr;
   /* USER CODE END SysInit */
+		
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
@@ -378,7 +377,7 @@ int main(void)
   MX_TIM10_Init();
   MX_TIM14_Init();
   MX_CRC_Init();
-  MX_I2C1_Init();
+//  MX_I2C1_Init();
   MX_IWDG_Init();
   /* USER CODE BEGIN 2 */
     HAL_UART_Receive_DMA(&huart2,(uint8_t*) &rer,1);
@@ -391,7 +390,10 @@ int main(void)
 			stMbAdd[1]=HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_1)!=0;
 			i2cAddr = stMbAdd[0]+stMbAdd[1]+1; //230807	
 //			hi2c1.Init.OwnAddress1 = i2cAddr;
-		
+			 
+			 MX_I2C1_Init();
+			 
+			 
 		CCRC = HAL_CRC_Calculate(&hcrc, (uint32_t *)0x8000000, 0xE208); //0x40000);
 //		md5sum = (uint32_t)CCRC;
 		sprintf(buffer2, "%X",CCRC);
@@ -403,7 +405,9 @@ int main(void)
 		ADC_CS(-1); // Выбор АЦП отключен
 
 	
-	hi2c1.Init.OwnAddress1 = i2cAddr;
+//	hi2c1.Init.OwnAddress1 = i2cAddr;
+//		hi2c1.Devaddress = i2cAddr;
+//	MX_I2C1_Init();
 		
 	HAL_TIM_PWM_Start_IT(&htim9, TIM_CHANNEL_1);
 	HAL_TIM_PWM_Start_IT(&htim9, TIM_CHANNEL_2);
@@ -705,9 +709,9 @@ int main(void)
 
 
 
-	    /* USER CODE END WHILE */
+    /* USER CODE END WHILE */
 
-  /* USER CODE BEGIN 3 */
+    /* USER CODE BEGIN 3 */
   
   /* USER CODE END 3 */
 }
@@ -803,7 +807,7 @@ static void MX_I2C1_Init(void)
   hi2c1.Instance = I2C1;
   hi2c1.Init.ClockSpeed = 100000;
   hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
-  hi2c1.Init.OwnAddress1 = 2;
+  hi2c1.Init.OwnAddress1 = i2cAddr;
   hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
   hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
   hi2c1.Init.OwnAddress2 = 0;
@@ -1607,7 +1611,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 					arrI2c_T[8] = arrWord[114]>>8;
 					arrI2c_T[9] = arrWord[114];
 // Управление смещением 100 В
-//					arrI2c_T[11] = 0xBB; //EON_off; // 1 когда напряжение должно быть снято
+					arrI2c_T[11] = 0xBB; //EON_off; // 1 когда напряжение должно быть снято
 		 
 		 		 
 		 
