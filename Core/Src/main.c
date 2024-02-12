@@ -1568,7 +1568,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 								{
 									if (startSett)
 									{
-											ch_monitor[i] = ModeCH(i,arrBool, arrWord, adc_current);
+										 ModeCH(i,arrBool, arrWord, adc_current, 	ch_monitor);
 											
 												alarm_mes = sort(ch_monitor);
 										

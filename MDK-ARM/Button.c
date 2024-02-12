@@ -115,10 +115,10 @@ _Bool timeNoPush (uint16_t delay, uint8_t numChannel) //
   
               
   //*****************************************************************************
-uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_current) // wordSet массив типа arrWord
+void ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_current, uint8_t* ch_monitor) // wordSet массив типа arrWord
   {
 
-		uint8_t out;
+//		uint8_t out;
 		static uint16_t mode[400];
 //		wordSet[40+nCh] = mode[nCh];
 		
@@ -146,7 +146,7 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
 						break;
 					}               
 					led_rgb[nCh] = _Blue; // Синий мониторинг выключен желтый //Nblinck(2, 0x000f0000, 500);                                          
-			//				out = 0;
+			//				ch_monitor[nCh] = 0;
 		break;
 		case 1:
 		//******************************************************************** 1             
@@ -168,7 +168,7 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
 
 					led_rgb[nCh] = Nblinck( wordSet[nCh], _Green, 500, nCh); // 
         
-//					out = 0;
+//					ch_monitor[nCh] = 0;
       break;
 			case 2:		
 			//******************************************************************** 2            
@@ -273,7 +273,7 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
         }  
 					led_rgb[nCh] = Nblinck( (_mode20P|_mode20P<<8) , _Blue, 500, nCh); // 
         
-//			out =0;
+//			ch_monitor[nCh] =0;
       break;
 				
 			case 5:	
@@ -305,14 +305,14 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
         }  
 
        led_rgb[nCh] = Nblinck(( _mode30P| _mode30P<<8) , _Blue, 500, nCh); //2
-//				out = 0;
+//				ch_monitor[nCh] = 0;
       break;
 				
 			case 6:	
 			//********************************************************************  6      	
 					led_rgb[nCh]= _Yellow;
 					
-					out = 0;
+					ch_monitor[nCh] = 0;
 					if ((Alarm[140+nCh] & Alarm[150+nCh])==0)
 					{
 						wordSet[40+nCh] = 8;					
@@ -362,7 +362,7 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
 	//********************************************************************   7  					
 			led_rgb[nCh]= _Red;		
 			
-			out = 0;
+			ch_monitor[nCh] = 0;
 			
 					if (Alarm[20+nCh]&Alarm[30+nCh]&Alarm[40+nCh]&Alarm[50+nCh])
 						{
@@ -388,7 +388,7 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
 							switch (tempPush)
 							{
 								led_rgb[nCh] =  _Red;
-								out = 0;
+								ch_monitor[nCh] = 0;
 								
 								case 0:
 								wordSet[40+nCh] = 7; // monitor off
@@ -415,7 +415,7 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
 //********************************************************************   8    
 					led_rgb[nCh] = Alarm_blinck (_Red,_Yellow, 500, nCh);			//_Yellow	напряжение в кабеле	более Уставки 
 					
-					out = 0;
+					ch_monitor[nCh] = 0;
 
 					if (Alarm[nCh+140] & Alarm[nCh+150])
 					{
@@ -456,7 +456,7 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
 		case 61:
 				/* прдупр. сопротивление изоляции 1 ниже нормы  (110)*/
 		
-				out = 	0x10;	
+				ch_monitor[nCh] = 	0x10;	
 		
 		
 				if (Alarm[nCh+110] == 1)
@@ -497,7 +497,7 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
 				/* прдупр. сопротивление изоляции 2 ниже нормы  (120)*/
 		case 62:
 			
-			out = 	0x20;	
+			ch_monitor[nCh] = 	0x20;	
 		
 		
 				led_rgb[nCh] = Alarm_blinck (_Yellow,_Black, 500, nCh);
@@ -530,7 +530,7 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
 				/* прдупр. сопротивление шлейфа ниже нормы  (130)*/
 		case 63:
 			
-			out = 	0x30;	
+			ch_monitor[nCh] = 	0x30;	
 						
 				led_rgb[nCh] = Alarm_blinck (_Yellow,_Black, 500, nCh);
 
@@ -563,7 +563,7 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
 				/* прдупр. сопротивление шлейфа выше предупредительрой нормы  (140)*/
 		case 64:
 			
-			out = 	0x40;	
+			ch_monitor[nCh] = 	0x40;	
 		
 				led_rgb[nCh] = Alarm_blinck (_Yellow,_Black, 500, nCh);
 
@@ -597,7 +597,7 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
 				/* прдупр. сопротивление шлейфа выше аварийной нормы  (20)*/
 		case 71:
 			
-			out = 	0x11;	
+			ch_monitor[nCh] = 	0x11;	
 		
 				led_rgb[nCh] = Alarm_blinck (_Red,_Black, 500, nCh);
 
@@ -631,7 +631,7 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
 				/* прдупр. сопротивление шлейфа выше аварийной нормы  (30)*/
 		case 72:
 			
-			out = 	0x21;	
+			ch_monitor[nCh] = 	0x21;	
 		
 				led_rgb[nCh] = Alarm_blinck (_Red,_Black, 500, nCh);
 
@@ -664,7 +664,7 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
 				/* прдупр. сопротивление шлейфа выше аварийной нормы  (40)*/
 		case 73:
 			
-			out = 	0x31;	
+			ch_monitor[nCh] = 	0x31;	
 		
 				led_rgb[nCh] = Alarm_blinck (_Red,_Black, 500, nCh);
 
@@ -697,7 +697,7 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
 				/* прдупр. сопротивление шлейфа выше аварийной нормы  (40)*/
 		case 74:
 			
-			out = 	0x41;	
+			ch_monitor[nCh] = 	0x41;	
 		
 				led_rgb[nCh] = Alarm_blinck (_Red,_Black, 500, nCh);
 
@@ -731,7 +731,7 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
 		
 			case 75:
 			
-			out = 	0x10;	
+			ch_monitor[nCh] = 	0x10;	
 		
 				led_rgb[nCh] = Alarm_blinck (_Yellow,_Black, 500, nCh);
 
@@ -765,7 +765,7 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
 		
 			case 76:
 			
-			out = 	0x20;	
+			ch_monitor[nCh] = 	0x20;	
 		
 				led_rgb[nCh] = Alarm_blinck (_Yellow,_Black, 500, nCh);
 
@@ -799,7 +799,7 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
 		
 			case 77:
 			
-			out = 	0x30;	
+			ch_monitor[nCh] = 	0x30;	
 		
 				led_rgb[nCh] = Alarm_blinck (_Yellow,_Black, 500, nCh);
 
@@ -833,7 +833,7 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
 		
 			case 78:
 			
-			out = 	0x40;	
+			ch_monitor[nCh] = 	0x40;	
 		
 				led_rgb[nCh] = Alarm_blinck (_Yellow,_Black, 500, nCh);
 
@@ -867,7 +867,7 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
 		
 			case 81:
 			
-			out = 	0x51;	
+			ch_monitor[nCh] = 	0x51;	
 		
 				led_rgb[nCh] = Alarm_blinck (_Red,_Black, 500, nCh);
 
@@ -901,7 +901,7 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
 		
 			case 82:
 			
-			out = 	0x61;	
+			ch_monitor[nCh] = 	0x61;	
 		
 				led_rgb[nCh] = Alarm_blinck (_Red,_Black, 500, nCh);
 
@@ -931,7 +931,7 @@ uint8_t ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_curre
 			break;	
 				
 		}
-			return out;
+//			return out;
 			
 	} 
 	

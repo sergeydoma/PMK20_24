@@ -317,7 +317,7 @@ _Bool DeltaBool(uint16_t delay);
 uint8_t timePush (uint16_t delayPush, uint8_t numChannel);
 _Bool timeNoPush (uint16_t delay, uint8_t numChannel);
  uint32_t Nblinck (uint16_t mode, uint32_t color, uint16_t period, uint8_t Ch);
-uint8_t ModeCH (uint8_t nCh, _Bool* Alarm, uint16_t* wordSet, uint8_t adc_current);
+void ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_current, uint8_t* ch_monitor);
  //++++++++++++++++++++++++++++++++++++++++++++++++++
  void Blink_LED(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin);
  void LED_Link(uint8_t val) ;
