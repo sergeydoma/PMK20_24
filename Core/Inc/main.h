@@ -363,6 +363,7 @@ void setMode(uint8_t nCh, uint16_t* arrWord, uint16_t* mode);
 
 uint8_t sort(uint8_t* status);
 
+
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

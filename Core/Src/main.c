@@ -95,6 +95,7 @@ int16_t blink; // для выбора режима упрвления миган
 		uint8_t timeModeEon = 0;
 		_Bool startLokal = 0;
 		uint8_t statusMb;
+		uint8_t alarm_mes =0;
 		
 		float callR[10];
 		float tempSet[10];
@@ -1568,6 +1569,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 									if (startSett)
 									{
 											ch_monitor[i] = ModeCH(i,arrBool, arrWord, adc_current);
+											
+												alarm_mes = sort(ch_monitor);
+										
 												if (arrWord[40+i]==0)
 														{set_set[i]=1;}
 														
@@ -1611,7 +1615,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 					arrI2c_T[8] = arrWord[114]>>8;
 					arrI2c_T[9] = arrWord[114];
 // Управление смещением 100 В
-					arrI2c_T[11] = 0xBB; //EON_off; // 1 когда напряжение должно быть снято
+					arrI2c_T[11] = alarm_mes; //0xBB; //EON_off; // 1 когда напряжение должно быть снято
 		 
 		 		 
 		 
