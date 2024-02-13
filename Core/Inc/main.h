@@ -186,7 +186,7 @@ typedef struct
 #endif
 
 #ifndef _setVolt
-#define _setVolt					5				// уставка по умолчению для ошибки по напряжению утечки
+#define _setVolt					10				// уставка по умолчению для ошибки по напряжению утечки
 #endif
 
 #ifndef _constBipol

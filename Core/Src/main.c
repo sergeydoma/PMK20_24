@@ -1589,8 +1589,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 															if (arrWord[70+i]< (_Rloop)){arrWord[30+i]=(_Rloop);}
 															else {arrWord[30+i] = arrWord[70+i];}
 															
+//															if (arrWord[200+i]< (_setVolt)){arrWord[200+i]=(_setVolt);}
+//															else {arrWord[200+i] = arrWord[70+i];}
+															arrWord[200+i]=(_setVolt);
 															
-
 														set_set[i] = 0;
 														}
 									}
