@@ -822,7 +822,7 @@ void ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_current,
 					{
 						wordSet[40+nCh] = 71;
 					}
-				else if ((Alarm[nCh+130] == 1) | (Alarm[40 + nCh] ==0)) // есть авария по этому параметру
+				else if ((Alarm[130 + nCh] == 1) | (Alarm[40 + nCh] ==0)) // есть авария по этому параметру
 				{
 					wordSet[40+nCh] = 78;
 				}
