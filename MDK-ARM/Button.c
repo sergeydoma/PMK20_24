@@ -198,7 +198,7 @@ void ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_current,
 
 										led_rgb[nCh] =  _Red; 
 						}	
-					else if (((Alarm[110 + nCh]& Alarm[120 + nCh] & Alarm [130 + nCh])==0)& 
+					else if (((Alarm[110 + nCh]& Alarm[120 + nCh] & Alarm [130 + nCh] & Alarm [160 + nCh])==0)& 
 						(wordSet[40+nCh] != 61)
 							)
 						{
@@ -754,7 +754,7 @@ void ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_current,
 					{
 						wordSet[40+nCh] = 71;
 					}
-				else if (Alarm[nCh+110] == 1)
+				else if ((Alarm[nCh+110] == 1) | (Alarm[20 + nCh] ==0)) // есть авария по этому параметру
 				{
 					wordSet[40+nCh] = 76;
 				}
@@ -788,7 +788,7 @@ void ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_current,
 					{
 						wordSet[40+nCh] = 71;
 					}
-				else if (Alarm[nCh+120] == 1)
+				else if ((Alarm[nCh+120] == 1)| (Alarm[30 + nCh] ==0)) // есть авария по этому параметру
 				{
 					wordSet[40+nCh] = 77;
 				}
@@ -822,14 +822,15 @@ void ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_current,
 					{
 						wordSet[40+nCh] = 71;
 					}
-				else if (Alarm[nCh+130] == 1)
+				else if ((Alarm[nCh+130] == 1) | (Alarm[40 + nCh] ==0)) // есть авария по этому параметру
 				{
 					wordSet[40+nCh] = 78;
 				}
+				
 				break;
 				
 //********************************************************************   78
-				/*  прдупр. сопротивление изоляции 2 ниже нормы  (160)*/
+				/*  прдупр. сопротивление шлейфа выше нопрмы  (160)*/
 		
 			case 78:
 			
@@ -856,7 +857,7 @@ void ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_current,
 					{
 						wordSet[40+nCh] = 71;
 					}
-				else if (Alarm[nCh+130] == 1)
+				else if ((Alarm[nCh+160] == 1) | (Alarm[50 + nCh] ==0)) // есть авария по этому параметру
 				{
 					wordSet[40+nCh] = 71;
 				}	

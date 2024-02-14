@@ -233,6 +233,7 @@ if (R>65535){R=65535;}
 			
 		//диапазон 	
 			setPointLoop[nCh] = arrWord[nCh]>>8;
+
 			delta[nCh] = ((uint8_t)setPointLoop[nCh])*0.01; //230717
 		// Сопротивление шлейфа
 			setRz[nCh] = arrWord[nCh+30];
