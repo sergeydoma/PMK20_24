@@ -145,7 +145,7 @@ void ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_current,
 						wordSet[40+nCh] = 3; // select 1  длинное нажатие
 						break;
 					}               
-					led_rgb[nCh] = _Blue; // Синий мониторинг выключен желтый //Nblinck(2, 0x000f0000, 500);                                          
+					led_rgb[nCh] = _Grey; // Синий мониторинг выключен желтый //Nblinck(2, 0x000f0000, 500);                                          
 			//				ch_monitor[nCh] = 0;
 		break;
 		case 1:
@@ -241,7 +241,7 @@ void ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_current,
           break;
         }  
 				
-					led_rgb[nCh] = Nblinck( (_mode10P|_mode10P<<8) , _Blue, 500, nCh); // _Yellow 
+					led_rgb[nCh] = Nblinck( (_mode10P|_mode10P<<8) , _Grey, 500, nCh); // _Yellow 
         
        break;
 					
@@ -271,7 +271,7 @@ void ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_current,
 									
           break;
         }  
-					led_rgb[nCh] = Nblinck( (_mode20P|_mode20P<<8) , _Blue, 500, nCh); // 
+					led_rgb[nCh] = Nblinck( (_mode20P|_mode20P<<8) , _Grey, 500, nCh); // 
         
 //			ch_monitor[nCh] =0;
       break;
@@ -304,7 +304,7 @@ void ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_current,
           break;
         }  
 
-       led_rgb[nCh] = Nblinck(( _mode30P| _mode30P<<8) , _Blue, 500, nCh); //2
+       led_rgb[nCh] = Nblinck(( _mode30P| _mode30P<<8) , _Grey, 500, nCh); //2
 //				ch_monitor[nCh] = 0;
       break;
 				
@@ -864,11 +864,11 @@ void ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_current,
 			break;
 				
 	//********************************************************************   81
-				/*  прдупр. сопротивление изоляции 2 ниже нормы  (140)*/
+				/*  авария напряжение 1 выше нормы 1u  (140)*/
 		
 			case 81:
 			
-			ch_monitor[nCh] = 	0x51;	
+			ch_monitor[nCh] = 	0x12;	
 		
 				led_rgb[nCh] = Alarm_blinck (_Red,_Black, 500, nCh);
 
@@ -898,11 +898,11 @@ void ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_current,
 			break;
 				
 			//********************************************************************   82
-				/*  прдупр. сопротивление изоляции 2 ниже нормы  (160)*/
+				/*  авария напряжение 2 выше нормы  2u  (160)*/
 		
 			case 82:
 			
-			ch_monitor[nCh] = 	0x61;	
+			ch_monitor[nCh] = 	0x22;	
 		
 				led_rgb[nCh] = Alarm_blinck (_Red,_Black, 500, nCh);
 

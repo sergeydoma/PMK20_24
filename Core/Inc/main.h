@@ -158,6 +158,10 @@ typedef struct
 #define _Violet 				0x00050001	// Фиолетовый
 #endif
 
+#ifndef _Grey
+#define _Grey												0xff500F01//0xff500A01	// Серый
+#endif
+
 #ifndef _Black
 #define _Black				0x00000000	// Фиолетовый
 #endif

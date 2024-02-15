@@ -1598,7 +1598,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 									}
 									else
 									{
-										led_rgb[i]= _Violet;
+										led_rgb[i]= _Blue; // _Violet;
 									}
 								}
 								 
