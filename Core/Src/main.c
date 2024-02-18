@@ -1641,7 +1641,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 							}
 		 
 
-								
+	//git							
 									
 							mbAddr = arrI2c_R[0]+ i2cAddr - 1;
 							modeEon = arrI2c_R[10];	
