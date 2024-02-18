@@ -367,6 +367,10 @@ void setMode(uint8_t nCh, uint16_t* arrWord, uint16_t* mode);
 
 uint8_t sort(uint8_t* status);
 
+void I2C_ClearBusyFlagErratum(I2C_HandleTypeDef *hi2c, uint32_t timeout);
+
+static uint8_t wait_for_gpio_state_timeout(GPIO_TypeDef *port, uint16_t pin, GPIO_PinState state, uint8_t timeout);
+
 
 /* USER CODE END Private defines */
 

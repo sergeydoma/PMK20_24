@@ -855,6 +855,11 @@
               <FileType>5</FileType>
               <FilePath>..\Core\Inc\MY_FLASH.h</FilePath>
             </File>
+            <File>
+              <FileName>i2c_recet.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\i2c_recet.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -924,6 +929,11 @@
               <FileName>alarm&amp;warning.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\alarm&amp;warning.c</FilePath>
+            </File>
+            <File>
+              <FileName>i2c_restart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\i2c_restart.c</FilePath>
             </File>
           </Files>
         </Group>

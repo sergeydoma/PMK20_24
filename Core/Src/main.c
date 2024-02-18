@@ -209,6 +209,8 @@ static void MX_IWDG_Init(void);
 
 void HAL_I2C_SlaveTxCpltCallback(I2C_HandleTypeDef *hi2c)
 {
+	
+		HAL_IWDG_Refresh(&hiwdg);
 			
 		slaveWrData = 0;
 							RTF = HAL_I2C_Slave_Receive_DMA(&hi2c1, arrI2c_R,12);						
@@ -360,6 +362,12 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
+	__HAL_RCC_I2C1_CLK_ENABLE();
+  HAL_Delay(100);
+  __HAL_RCC_I2C1_FORCE_RESET();
+  HAL_Delay(100);
+  __HAL_RCC_I2C1_RELEASE_RESET();
+  HAL_Delay(100);		
 //	hi2c1.Init.OwnAddress1 = i2cAddr;
   /* USER CODE END SysInit */
 		
@@ -495,7 +503,7 @@ int main(void)
 		for(adc_current=0; adc_current<11; adc_current++) 
 		{
 			
-			HAL_IWDG_Refresh(&hiwdg);
+//			HAL_IWDG_Refresh(&hiwdg);
 			
 			if (adc_current < 10)
 			{
@@ -1623,10 +1631,14 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		 
 //				arrI2c_T[0]= HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_6);  //  adc_current; //test
 //				arrI2c_T[1] = arr[1];	//
-							for (int i=0; i<100; i++){}
-		 					WTF = HAL_I2C_Slave_Transmit_DMA(&hi2c1,arrI2c_T,12);// RTF =
-							for (int i=0; i<100; i++){}
 		 
+							if (RTF == HAL_OK)
+							{
+							for (int i=0; i<10; i++){__ASM("nop");}
+							WTF = HAL_I2C_Slave_Transmit_DMA(&hi2c1,arrI2c_T,12);// RTF =
+//							HAL_Delay(100);
+							for (int i=0; i<1000; i++){__ASM("nop");}
+							}
 		 
 
 								
