@@ -370,7 +370,6 @@ int main(void)
   HAL_Delay(100);		
 //	hi2c1.Init.OwnAddress1 = i2cAddr;
   /* USER CODE END SysInit */
-		
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
@@ -1635,7 +1634,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 							if (RTF == HAL_OK)
 							{
 							for (int i=0; i<10; i++){__ASM("nop");}
-							WTF = HAL_I2C_Slave_Transmit_DMA(&hi2c1,arrI2c_T,12);// RTF =
+ 							WTF = HAL_I2C_Slave_Transmit_DMA(&hi2c1,arrI2c_T,12);// RTF =
 //							HAL_Delay(100);
 							for (int i=0; i<1000; i++){__ASM("nop");}
 							}
