@@ -326,10 +326,10 @@ void ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_current,
 										led_rgb[nCh] =  _Red;
 						}
 												
-					else if (Alarm[110 + nCh]& Alarm[120 + nCh] & Alarm [130 + nCh])
+					else if (Alarm[110 + nCh]& Alarm[120 + nCh] & Alarm [130 + nCh] & Alarm [160 +nCh])
 							{
 								wordSet[40+nCh] = 2;
-								break;
+						
 							}
 					else
 					{														
