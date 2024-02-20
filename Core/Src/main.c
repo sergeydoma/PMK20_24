@@ -148,7 +148,7 @@ uint8_t adc_current =0;
 	
 	uint32_t SetEEprom;
 	_Bool LoadNumDev;
-	
+	struct I2C_Module i2cm;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -213,8 +213,11 @@ void HAL_I2C_SlaveTxCpltCallback(I2C_HandleTypeDef *hi2c)
 		HAL_IWDG_Refresh(&hiwdg);
 			
 		slaveWrData = 0;
+	
+//							for (int i=0; i<1000; i++){__ASM("nop");}
 							RTF = HAL_I2C_Slave_Receive_DMA(&hi2c1, arrI2c_R,12);						
-							for (int i=0; i<100; i++){}
+							for (int i=0; i<100; i++){__ASM("nop");}
+								
 							arrWord[110] = arrI2c_R[1]<<8	| arrI2c_R[2];
 							arrWord[111] = arrI2c_R[3]<<8	| arrI2c_R[4];
 								
@@ -262,7 +265,11 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
+	i2cm.instance = hi2c1;
+	i2cm.sclPin = GPIO_PIN_10;
+	i2cm.sclPort = GPIOB;
+	i2cm.sdaPin = GPIO_PIN_11;
+	i2cm.sdaPort = GPIOB;
 	
 		uint8_t tbyte;
 		uint64_t flas_length = 0;
@@ -815,7 +822,7 @@ static void MX_I2C1_Init(void)
   hi2c1.Instance = I2C1;
   hi2c1.Init.ClockSpeed = 100000;
   hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
-  hi2c1.Init.OwnAddress1 = i2cAddr;
+  hi2c1.Init.OwnAddress1 = (i2cAddr*2);
   hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
   hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
   hi2c1.Init.OwnAddress2 = 0;
@@ -1176,7 +1183,7 @@ static void MX_TIM14_Init(void)
 
   /* USER CODE END TIM14_Init 1 */
   htim14.Instance = TIM14;
-  htim14.Init.Prescaler = 150;
+  htim14.Init.Prescaler = 15;
   htim14.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim14.Init.Period = 52500;
   htim14.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -1521,32 +1528,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
               {
                 PMU_Mode = 0;
               }
-//				if (arr[0]==mbAddr)
-//				{
-//							if ((arr[1]== lanCurr)&(lanTemer==0))							
-//							{
-//								
-//							LED_Link(2);
-//							arrI2c_T[1]=0;
-//								
-//							}
-//							else
-//							{
-//							LED_Link(1);
-//							arrI2c_T[1]=1;
-//								
-//							 lanTemer++;
-//								if(lanTemer>10000)
-//								{lanTemer =0;}								
-//								lanCurr = arr[1];
-//							}
-//						}
-//				else
-//				{
-//					LED_Link(2);
-//					arrI2c_T[1]=0;
-//				}
-//							if (arr[0]!= mbAddr)
+
 				if (statusMb ==0)
 				{ 
 			
@@ -1631,18 +1613,19 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 //				arrI2c_T[0]= HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_6);  //  adc_current; //test
 //				arrI2c_T[1] = arr[1];	//
 		 
-							if (RTF == HAL_OK)
-							{
-							for (int i=0; i<10; i++){__ASM("nop");}
+//							if (RTF == HAL_OK)
+//							{
+							for (int i=0; i<100; i++){__ASM("nop");}
  							WTF = HAL_I2C_Slave_Transmit_DMA(&hi2c1,arrI2c_T,12);// RTF =
-//							HAL_Delay(100);
-							for (int i=0; i<1000; i++){__ASM("nop");}
-							}
+//						HAL_Delay(100);
+							for (int i=0; i<100; i++){__ASM("nop");}
+//							}
 		 
 
 	//git							
 									
 							mbAddr = arrI2c_R[0]+ i2cAddr - 1;
+							
 							modeEon = arrI2c_R[10];	
 //							hvAllarm = arrI2c_R[11];
 								

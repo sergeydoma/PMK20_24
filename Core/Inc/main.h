@@ -81,6 +81,15 @@ typedef struct
 } GPIO;
 
 #define Queue_item_size sizeof(AMessage)
+	
+struct I2C_Module
+{
+  I2C_HandleTypeDef   instance;
+  uint16_t            sdaPin;
+  GPIO_TypeDef*       sdaPort;
+  uint16_t            sclPin;
+  GPIO_TypeDef*       sclPort;
+};
     
 /* USER CODE END ET */
 
@@ -370,6 +379,8 @@ uint8_t sort(uint8_t* status);
 void I2C_ClearBusyFlagErratum(I2C_HandleTypeDef *hi2c, uint32_t timeout);
 
 static uint8_t wait_for_gpio_state_timeout(GPIO_TypeDef *port, uint16_t pin, GPIO_PinState state, uint8_t timeout);
+
+void I2C_ClearBusyFlagErratum1(struct I2C_Module* i2c);
 
 
 /* USER CODE END Private defines */
