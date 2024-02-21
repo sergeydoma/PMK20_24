@@ -99,6 +99,11 @@ int16_t blink; // для выбора режима упрвления миган
 		
 		float callR[10];
 		float tempSet[10];
+		
+		// синхронизация I2c с записью флеш памяти
+		uint8_t sinM; //
+		uint8_t sinT; //
+		uint8_t sinR; //
 //	uint16_t currentTime; // переменная для выдержки 30 сек не нажата ни одна кнопка
 GPIO switch_gpio[10] = {
 	{ BT1_GPIO_Port, BT1_Pin },
@@ -210,20 +215,28 @@ static void MX_IWDG_Init(void);
 void HAL_I2C_SlaveTxCpltCallback(I2C_HandleTypeDef *hi2c)
 {
 	
-		HAL_IWDG_Refresh(&hiwdg);
+//		HAL_IWDG_Refresh(&hiwdg);
 			
 		slaveWrData = 0;
 	
 //							for (int i=0; i<1000; i++){__ASM("nop");}
-							RTF = HAL_I2C_Slave_Receive_DMA(&hi2c1, arrI2c_R,12);						
-							for (int i=0; i<100; i++){__ASM("nop");}
-								
-							arrWord[110] = arrI2c_R[1]<<8	| arrI2c_R[2];
-							arrWord[111] = arrI2c_R[3]<<8	| arrI2c_R[4];
-								
-							if(arrI2c_R[5] == 0xF0){arrWord[114]=0x01FF;}
-							else if (arrI2c_R[5] == 0x0F){arrWord[114]=0x05;}
-//							arrWord[114] = arrI2c_R[5]; //<<8	| arrI2c_R[6];
+							if(sinM ==0)
+							{
+									
+									RTF = HAL_I2C_Slave_Receive_DMA(&hi2c1, arrI2c_R,12);						
+									for (int i=0; i<100; i++){__ASM("nop");}
+										
+									arrWord[110] = arrI2c_R[1]<<8	| arrI2c_R[2];
+									arrWord[111] = arrI2c_R[3]<<8	| arrI2c_R[4];
+										
+									if(arrI2c_R[5] == 0xF0){arrWord[114]=0x01FF;}
+									else if (arrI2c_R[5] == 0x0F){arrWord[114]=0x05;}
+		//							arrWord[114] = arrI2c_R[5]; //<<8	| arrI2c_R[6];
+							}
+							else
+							{
+								sinR = 1;
+							}
 }
 void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *hi2c)
 {
@@ -509,7 +522,7 @@ int main(void)
 		for(adc_current=0; adc_current<11; adc_current++) 
 		{
 			
-//			HAL_IWDG_Refresh(&hiwdg);
+			HAL_IWDG_Refresh(&hiwdg);
 			
 			if (adc_current < 10)
 			{
@@ -822,7 +835,7 @@ static void MX_I2C1_Init(void)
   hi2c1.Instance = I2C1;
   hi2c1.Init.ClockSpeed = 100000;
   hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
-  hi2c1.Init.OwnAddress1 = (i2cAddr*2);
+  hi2c1.Init.OwnAddress1 = i2cAddr<<1;
   hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
   hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
   hi2c1.Init.OwnAddress2 = 0;
@@ -854,7 +867,7 @@ static void MX_IWDG_Init(void)
 
   /* USER CODE END IWDG_Init 1 */
   hiwdg.Instance = IWDG;
-  hiwdg.Init.Prescaler = IWDG_PRESCALER_128;
+  hiwdg.Init.Prescaler = IWDG_PRESCALER_256;
   hiwdg.Init.Reload = 0xfff;
   if (HAL_IWDG_Init(&hiwdg) != HAL_OK)
   {
@@ -1615,10 +1628,18 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		 
 //							if (RTF == HAL_OK)
 //							{
-							for (int i=0; i<100; i++){__ASM("nop");}
- 							WTF = HAL_I2C_Slave_Transmit_DMA(&hi2c1,arrI2c_T,12);// RTF =
-//						HAL_Delay(100);
-							for (int i=0; i<100; i++){__ASM("nop");}
+							if (sinR ==0)
+							{
+								sinT =0;
+								for (int i=0; i<100; i++){__ASM("nop");}
+								WTF = HAL_I2C_Slave_Transmit_DMA(&hi2c1,arrI2c_T,12);// RTF =
+	//						HAL_Delay(100);
+								for (int i=0; i<100; i++){__ASM("nop");}
+							}
+							else
+							{
+								sinT = 1;
+							}
 //							}
 		 
 
@@ -1711,12 +1732,18 @@ void preset_V(void)
 		}
 			if (ttr)		// & (PMU_Mode==2)) 230722
 		{	
-			
-			__disable_irq();
-				
-			MY_FLASH_WriteN(0,arrWord,400,DATA_TYPE_16); // Запись измененных значений режима и уставок.	
+			sinM = 1;
+			if  (sinT)
+			{
+					__disable_irq();
+						
+					MY_FLASH_WriteN(0,arrWord,400,DATA_TYPE_16); // Запись измененных значений режима и уставок.	
 
-			__enable_irq();
+					__enable_irq();
+				sinM = 0;
+				sinR = 0;
+			}
+			
 			
 		}		
 
