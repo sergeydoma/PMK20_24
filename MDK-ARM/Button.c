@@ -490,6 +490,8 @@ void ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_current,
 					}
 					if ((setMode2[nCh] ==1) & (_modeEon ==10))
 					{
+							setMode2[nCh] = 0;
+						
 							chanSet[nCh] = 1;
 							Alarm[nCh+20] = 1;
 							Alarm[nCh+30] = 1;
@@ -501,7 +503,7 @@ void ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_current,
 							Alarm[nCh +160] = 1;
 						
 						wordSet[40+nCh] = 2;
-						setMode2[nCh] = 0;
+						
 					}						
 					
 				break;

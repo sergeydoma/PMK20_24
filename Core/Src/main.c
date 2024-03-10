@@ -656,7 +656,7 @@ int main(void)
               {
               	case 0:									
               		break;
-              	case 1:
+              	case 1:										
 										ADC_measureVolt(adc_current,arrWord,arrBool);
               		break;
 								case 2:										
@@ -668,7 +668,8 @@ int main(void)
 									break;
 								case 5:
 										for(int i = 0; i<10;i++)
-										{									
+										{	
+											if(	arrWord[40+i]	==9){arrWord[40+i]=0;}	// 	отмена режима при перезагрузке				
 											arrWord[170+i] = arrWordBipol[170+i]; // сопротивление изоляции 1 при - смещении
 											arrWord[180+i] = arrWordBipol[180+i]; // сопротивление изоляции 2 при - смещении
 											arrWord[140] = arrWordBipol[140];
