@@ -104,6 +104,7 @@ int16_t blink; // для выбора режима упрвления миган
 		uint8_t sinM; //
 		uint8_t sinT; //
 		uint8_t sinR; //
+		uint8_t changSetP[10] = {0,0,0,0,0,0,0,0,0,0};
 //	uint16_t currentTime; // переменная для выдержки 30 сек не нажата ни одна кнопка
 GPIO switch_gpio[10] = {
 	{ BT1_GPIO_Port, BT1_Pin },
@@ -556,13 +557,13 @@ int main(void)
 //							ADC_measure(adc_current, arrWord, arrBoolTemp, startSett);
 //							set_set[adc_current] = 1;
 						}
-						else if ((arrWord[40+adc_current]!=0)&
-										(arrWord[40+adc_current]!=1)&
-										(arrWord[40+adc_current]!=3)&
-										(arrWord[40+adc_current]!=4)&
-										(arrWord[40+adc_current]!=5))									
-									
-						{
+//						else if ((arrWord[40+adc_current]!=0)&
+//										(arrWord[40+adc_current]!=1)&
+//										(arrWord[40+adc_current]!=3)&
+//										(arrWord[40+adc_current]!=4)&
+//										(arrWord[40+adc_current]!=5))									
+//									
+//						{
 							
 							
 							{
@@ -629,8 +630,8 @@ int main(void)
               }
 														
 							}
-						}
-						else if ((arrWord[40+adc_current]==1)|(arrWord[40+adc_current]==3)|(arrWord[40+adc_current]==4)|(arrWord[40+adc_current]==5) )
+//						}
+						if ((arrWord[40+adc_current]==1)|(arrWord[40+adc_current]==3)|(arrWord[40+adc_current]==4)|(arrWord[40+adc_current]==5)|(arrWord[40+adc_current]==9))
 						{
 							arrBool[adc_current+20]=1;
 							arrBool[adc_current+30]=1;
@@ -1570,7 +1571,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 								{
 									if (startSett)
 									{
-										 ModeCH(i,arrBool, arrWord, adc_current, 	ch_monitor, modeEon);
+										 changSetP[i] = 0;
+										
+										 ModeCH(i,arrBool, arrWord, adc_current, 	ch_monitor, modeEon, changSetP);
 											
 												alarm_mes = sort(ch_monitor);
 										
@@ -1580,7 +1583,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 												if ((arrWord[40+i]==3)|(arrWord[40+i]==4)|(arrWord[40+i]==5))
 												{set_set[i] = 0;}
 												
-												if (((arrWord[40+i]==2)|(arrWord[40+i]==6))& set_set[i])
+												if (((arrWord[40+i]==2)|(arrWord[40+i]==6) | (arrWord[40+i]==9)) & set_set[i] & changSetP[i])
 														{
 															if (arrWord[50+i]< (_Rins/16)){arrWord[10+i]=(_Rins/16);}
 															else {arrWord[10+i] = arrWord[50+i];}	// текущее значение в уставку
@@ -1596,6 +1599,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 															arrWord[200+i]=(_setVolt);
 															
 														set_set[i] = 0;
+														changSetP[i] = 0;	
 														}
 									}
 									else
@@ -1691,9 +1695,9 @@ void preset_V(void)
 		
 		for (int i=0; i<10; i++)
 		{
-			if ((res[40+i] <= 5) & (arrWord[40+i] >82)) // Нужно учесть режимы 6,7,8, 81, 82
+			if ((res[40+i] <= 9) & (arrWord[40+i] >82)) // Нужно учесть режимы 6,7,8, 81, 82
 			{arrWord[40+i] = res[40+i];}
-			else if ((arrWord[40+i]<=5)&(arrWord[40+i] !=res[40+i]))
+			else if ((arrWord[40+i]<=9)&(arrWord[40+i] !=res[40+i]))
 			{ttr =1;}
 			
 			

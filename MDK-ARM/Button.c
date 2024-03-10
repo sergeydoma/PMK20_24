@@ -1,6 +1,7 @@
 #include "main.h"
 #include "cmsis_os.h"
 static _Bool button[10];
+static uint8_t setMode2[10] = {0,0,0,0,0,0,0,0,0,0};
 extern uint16_t currentTime;
 extern _chlMode cTime[10]; 
 extern uint8_t chMode[10];
@@ -115,7 +116,7 @@ _Bool timeNoPush (uint16_t delay, uint8_t numChannel) //
   
               
   //*****************************************************************************
-void ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_current, uint8_t* ch_monitor, uint8_t modeEon) // wordSet массив типа arrWord
+void ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_current, uint8_t* ch_monitor, uint8_t _modeEon, uint8_t* chanSet) // wordSet массив типа arrWord
   {
 
 //		uint8_t out;
@@ -442,6 +443,7 @@ void ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_current,
 							Alarm[nCh +110] = 1;
 							Alarm[nCh +120] = 1;
 							Alarm[nCh +130] = 1;
+							Alarm[nCh +160] = 1;
 							
 							wordSet[40+nCh] = 0; // select 1					
 							break;
@@ -476,10 +478,31 @@ void ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_current,
 							Alarm[nCh +110] = 1;
 							Alarm[nCh +120] = 1;
 							Alarm[nCh +130] = 1;
+							Alarm[nCh +160] = 1;
 							
 							wordSet[40+nCh] = 0; // select 1					
 							break;
 						}
+						
+					if((setMode2[nCh] == 0) & (_modeEon == 0))
+					{
+						setMode2[nCh] = 1;
+					}
+					if ((setMode2[nCh] ==1) & (_modeEon ==10))
+					{
+							chanSet[nCh] = 1;
+							Alarm[nCh+20] = 1;
+							Alarm[nCh+30] = 1;
+							Alarm[nCh+40] = 1;
+							Alarm[nCh+50] = 1;
+							Alarm[nCh +110] = 1;
+							Alarm[nCh +120] = 1;
+							Alarm[nCh +130] = 1;
+							Alarm[nCh +160] = 1;
+						
+						wordSet[40+nCh] = 2;
+						setMode2[nCh] = 0;
+					}						
 					
 				break;
 
