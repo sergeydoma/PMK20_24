@@ -640,7 +640,7 @@ int main(void)
 							arrBool[110 + adc_current] = 1; // Предупреждение Riz1
 							arrBool[120 + adc_current] = 1; // Предупреждение Riz2
 							arrBool[130 + adc_current] = 1; // Предупреждение Rloop вниз
-							arrBool[160 +adc_current] = 1; // Предупреждение шлейфа вверх
+							arrBool[160 +	adc_current] = 1; // Предупреждение шлейфа вверх
 
 							//							ADC_measure(adc_current, arrWord, arrBoolTemp, startSett); // монитринг только включеных калалов
 						}
@@ -1570,7 +1570,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 								{
 									if (startSett)
 									{
-										 ModeCH(i,arrBool, arrWord, adc_current, 	ch_monitor);
+										 ModeCH(i,arrBool, arrWord, adc_current, 	ch_monitor, modeEon);
 											
 												alarm_mes = sort(ch_monitor);
 										

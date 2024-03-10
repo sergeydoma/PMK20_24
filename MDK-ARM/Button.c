@@ -115,7 +115,7 @@ _Bool timeNoPush (uint16_t delay, uint8_t numChannel) //
   
               
   //*****************************************************************************
-void ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_current, uint8_t* ch_monitor) // wordSet массив типа arrWord
+void ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_current, uint8_t* ch_monitor, uint8_t modeEon) // wordSet массив типа arrWord
   {
 
 //		uint8_t out;
@@ -159,7 +159,7 @@ void ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_current,
 						wordSet[40+nCh] = 1; // monitor off
 						break;          
 						case 1:
-						wordSet[40+nCh] = 2; // redi monitor
+						wordSet[40+nCh] = 9; // redi monitor
 						break;
 						case 2:
 						wordSet[40+nCh] = 1; // select 1
@@ -236,7 +236,7 @@ void ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_current,
 							wordSet[nCh] = _mode10P | (_mode10P<<8);
 							wordSet[250+nCh] = (_mode10P>>1) | (_mode10P<<7);
 						}
-						wordSet[40+nCh] = 2; // Переходим на мониторинг с уставкой 10%					
+						wordSet[40+nCh] = 9; // Переходим на мониторинг с уставкой 10%					
 						
           break;
         }  
@@ -267,7 +267,7 @@ void ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_current,
 						}
 						
 						
-					wordSet[40+nCh] = 2;
+					wordSet[40+nCh] = 9;
 									
           break;
         }  
@@ -299,7 +299,7 @@ void ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_current,
 							wordSet[250 + nCh] = (_mode30P>>1) | (_mode30P<<7);
 						}
 						 
-					wordSet[40+nCh] = 2; // select 1
+					wordSet[40+nCh] = 9; // select 1
 					
           break;
         }  
@@ -451,6 +451,38 @@ void ModeCH (uint8_t nCh, _Bool* Alarm,  uint16_t* wordSet, uint8_t adc_current,
 			default:	
 					wordSet[40+nCh] = 0;
 			break;
+			
+			case 9:				
+//********************************************************************   9    
+					led_rgb[nCh] = _Blue;			//_Yellow	напряжение в кабеле	более Уставки 
+					
+					ch_monitor[nCh] = 0;
+					
+						tempPush = timePush (4000, nCh);    
+
+						switch (tempPush)
+						{
+							case 0:
+							wordSet[40+nCh] = 9; // monitor off
+							break;          
+							case 1:
+								wordSet[40+nCh] = 9; // redi monitor  				
+							break;
+							case 2:
+							Alarm[nCh+20] = 1;
+							Alarm[nCh+30] = 1;
+							Alarm[nCh+40] = 1;
+							Alarm[nCh+50] = 1;
+							Alarm[nCh +110] = 1;
+							Alarm[nCh +120] = 1;
+							Alarm[nCh +130] = 1;
+							
+							wordSet[40+nCh] = 0; // select 1					
+							break;
+						}
+					
+				break;
+
 				
 	//********************************************************************   61 
 		case 61:
