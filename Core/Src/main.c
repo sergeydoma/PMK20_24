@@ -1564,7 +1564,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 					lanTimer = 0;
 				}
 							
-
+//gitt
               }
 						
                 for (int i=0;i<10;i++)
