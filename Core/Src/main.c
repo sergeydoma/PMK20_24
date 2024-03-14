@@ -589,6 +589,7 @@ int main(void)
 											arrWord[180+i] = arrWordBipol[180+i]; // сопротивление изоляции 2 при - смещении
 											arrWord[140] = arrWordBipol[140];
 											arrWord[221] = arrWordBipol[221];
+											arrWord[222] = arrWordBipol[222];
 										}
 									break;
 								case 6:									
@@ -620,7 +621,8 @@ int main(void)
 										arrBool[160 +i] = arrBoolBipol[160+i]; // Предупреждение шлейфа вверх
 										
 										arrWord[140] = arrWordBipol[140];
-										arrWord[221] = arrWordBipol[221];										
+										arrWord[221] = arrWordBipol[221];	
+										arrWord[222] = arrWordBipol[222];	
 									}
 									break;
 								case 10:
@@ -674,6 +676,7 @@ int main(void)
 											arrWord[180+i] = arrWordBipol[180+i]; // сопротивление изоляции 2 при - смещении
 											arrWord[140] = arrWordBipol[140];
 											arrWord[221] = arrWordBipol[221];
+											arrWord[222] = arrWordBipol[222];
 										}
 									break;
 								case 6:									
@@ -706,6 +709,7 @@ int main(void)
 										
 										arrWord[140] = arrWordBipol[140];
 										arrWord[221] = arrWordBipol[221];	
+										arrWord[222] = arrWordBipol[222];	
 										
 									}
 //									timeModeEon = 1; 
