@@ -482,7 +482,7 @@ int main(void)
 			
 		pmkError=0; // Сброс ошибки при перезагрузке
 		
-		arrWord[220] = ADC_Error(0x4F);
+//		arrWord[220] = ADC_Error(0x4F);
 		
 		pmkError = 0; // arrWord[220]!= 0;//230721
 		
@@ -522,7 +522,7 @@ int main(void)
 		
 		for(adc_current=0; adc_current<11; adc_current++) 
 		{
-			
+			arrWord[220] = ADC_Error(0x4F);
 			HAL_IWDG_Refresh(&hiwdg);
 			
 			if (adc_current < 10)
