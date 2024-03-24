@@ -567,6 +567,7 @@ int main(void)
 							
 							
 							{
+								arrBool[200] = 1;
 								switch (modeEon)
               {
               	case 0:		
@@ -650,10 +651,13 @@ int main(void)
 				}
 				else  // идет процесс старта
 				{
-					if (modeEon==1){startLokal=1;}
-					
+					if (modeEon==1)
+							{
+							startLokal=1;							
+							}					
 					if (startLokal ==1)
 					{
+						arrBool[200] = 0;
 					switch (modeEon)
               {
               	case 0:									
