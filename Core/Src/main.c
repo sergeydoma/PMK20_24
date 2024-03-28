@@ -38,6 +38,7 @@
  uint16_t crcTx;
  _Bool arrBool[0x400]; 
 	_Bool arrBoolTemp[100]; 
+	_Bool arrBoolVolt[100];
 	uint16_t arrWord[0x400];
 	uint16_t arrWord_minus[0x400];
 	uint16_t arrWordBipol[0x400];
@@ -552,6 +553,8 @@ int main(void)
 							arrBool[110+adc_current]=1;
 							arrBool[120+adc_current]=1;
 							arrBool[130+adc_current]=1;
+							arrBool[140+adc_current]=1; // авария по напряжению
+							arrBool[150+adc_current]=1; // авария по напряжению
 							arrBool[160+adc_current]=1;
 							
 //							ADC_measure(adc_current, arrWord, arrBoolTemp, startSett);
@@ -574,7 +577,7 @@ int main(void)
 									
               		break;
               	case 1:
-										ADC_measureVolt(adc_current,arrWord,arrBool);
+										ADC_measureVolt(adc_current,arrWord,arrBoolVolt);
               		break;
 								case 2:										
 									break;
@@ -623,7 +626,10 @@ int main(void)
 										
 										arrWord[140] = arrWordBipol[140];
 										arrWord[221] = arrWordBipol[221];	
-										arrWord[222] = arrWordBipol[222];	
+										arrWord[222] = arrWordBipol[222];
+
+										arrBool[140+i] = arrBoolVolt[140+i];
+										arrBool[150+i] = arrBoolVolt[150+i];
 									}
 									break;
 								case 10:
@@ -663,7 +669,7 @@ int main(void)
               	case 0:									
               		break;
               	case 1:										
-										ADC_measureVolt(adc_current,arrWord,arrBool);
+										ADC_measureVolt(adc_current,arrWord,arrBoolVolt);
               		break;
 								case 2:										
 									break;
@@ -714,6 +720,11 @@ int main(void)
 										arrWord[140] = arrWordBipol[140];
 										arrWord[221] = arrWordBipol[221];	
 										arrWord[222] = arrWordBipol[222];	
+										
+										arrBool[140+i] = arrBoolVolt[140+i];
+										arrBool[150+i] = arrBoolVolt[150+i];
+ 										
+										
 										
 									}
 //									timeModeEon = 1; 
